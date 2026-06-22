@@ -21,7 +21,7 @@ class RegisterActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.btnSignup.setOnClickListener {
+        binding.btnSignUp.setOnClickListener {
             val name = binding.etName.text.toString().trim()
             val email = binding.etEmail.text.toString().trim()
             val password = binding.etPassword.text.toString().trim()
@@ -49,7 +49,7 @@ class RegisterActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            if(!binding.Terms.isChecked){
+            if(!binding.cbTerms.isChecked){
                 Toast.makeText(this, "Please accept the Terms and Conditions", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -78,7 +78,7 @@ class RegisterActivity : AppCompatActivity() {
                         binding.etName.text?.clear()
                         binding.etEmail.text?.clear()
                         binding.etPassword.text?.clear()
-                        binding.Terms.isChecked = false
+                        binding.cbTerms.isChecked = false
 
 
 
@@ -108,7 +108,7 @@ class RegisterActivity : AppCompatActivity() {
             }
         }
 
-        binding.SignIn.setOnClickListener {
+        binding.tvSignIn.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
             finish()

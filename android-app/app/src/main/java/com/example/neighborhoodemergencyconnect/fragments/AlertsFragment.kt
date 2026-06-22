@@ -95,9 +95,7 @@ class AlertsFragment : Fragment() {
         )
 
         binding.statusDropdown.setOnItemClickListener { _, _, position, _ ->
-
             selectedStatus = statusItems[position]
-
             applyFilters()
         }
 

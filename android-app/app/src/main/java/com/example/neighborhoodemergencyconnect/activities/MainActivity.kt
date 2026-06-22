@@ -15,10 +15,10 @@ import com.example.neighborhoodemergencyconnect.models.FcmTokenRequest
 import com.google.firebase.messaging.FirebaseMessaging
 import com.example.neighborhoodemergencyconnect.databinding.ActivityMainBinding
 import com.example.neighborhoodemergencyconnect.fragments.AlertsFragment
-import com.example.neighborhoodemergencyconnect.fragments.HomeFragment
 import com.example.neighborhoodemergencyconnect.fragments.ProfileFragment
 import kotlinx.coroutines.launch
 import android.Manifest
+import com.example.neighborhoodemergencyconnect.fragments.MapFragment
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         //Default Fragment
         setContentView(binding.root)
-        replaceFragment(HomeFragment())
+        replaceFragment(MapFragment())
         if (
             ContextCompat.checkSelfPermission(
                 this,
@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
             when (it.itemId) {
 
                 R.id.nav_home -> {
-                    replaceFragment(HomeFragment())
+                    replaceFragment(MapFragment())
                     true
                 }
 
@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun replaceFragment(fragment: androidx.fragment.app.Fragment) {
-        supportFragmentManager.beginTransaction().replace(R.id.fragmentContainer, fragment).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.fragment, fragment).commit()
     }
     private fun updateFcmToken() {
 

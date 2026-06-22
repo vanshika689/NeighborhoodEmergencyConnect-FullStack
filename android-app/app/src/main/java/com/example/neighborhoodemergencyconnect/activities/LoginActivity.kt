@@ -22,20 +22,20 @@ class LoginActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(binding.root)
 
-        binding.button.setOnClickListener {
-           val email =  binding.email.text.toString()
-            val password = binding.pswrd.text.toString()
+        binding.btnSignIn.setOnClickListener {
+           val email =  binding.etEmail.text.toString()
+            val password = binding.etPassword.text.toString()
             if (email.isEmpty()) {
-                binding.email.error = "Email is required"
+                binding.etEmail.error = "Email is required"
                 return@setOnClickListener
             }
 
             if(!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()){
-                binding.email.error = "Enter a valid Email address"
+                binding.etEmail.error = "Enter a valid Email address"
                 return@setOnClickListener
             }
             if (password.isEmpty()) {
-                binding.pswrd.error = "Password is required"
+                binding.etPassword.error = "Password is required"
                 return@setOnClickListener
             }
 
@@ -67,7 +67,7 @@ class LoginActivity : AppCompatActivity() {
             }
 
         }
-        binding.textSignUp.setOnClickListener {
+        binding.tvSignUp.setOnClickListener {
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
 

@@ -80,7 +80,7 @@ class AlertsDetailsActivity : AppCompatActivity() {
         binding.tvTitle.text = alert.title
         binding.tvStatus.text = alert.status
         binding.tvDescription.text = alert.description
-        binding.tvLocation.text = alert.location
+        binding.tvLocation.text = alert.shortAddress
         binding.tvCreatedBy.text = alert.createdBy.name
         binding.tvCreatorEmail.text = alert.createdBy.email
         binding.tvCreatedAt.text = getRelativeTime(alert.createdAt)

@@ -4,6 +4,9 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -15,6 +18,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.NeighborhoodEmergencyConnect"
         android:usesCleartextTraffic="true">
+        <activity
+            android:name=".activities.SelectLocationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.VolunteerDashboard"
+            android:exported="false" />
+        <activity
+            android:name=".activities.citizenDashboard"
+            android:exported="false" />
         <activity
             android:name=".activities.PrivacyActivity"
             android:exported="false" />

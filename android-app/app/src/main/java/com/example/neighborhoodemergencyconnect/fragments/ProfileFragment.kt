@@ -13,7 +13,9 @@ import com.example.neighborhoodemergencyconnect.activities.DashboardActivity
 import com.example.neighborhoodemergencyconnect.activities.LoginActivity
 import com.example.neighborhoodemergencyconnect.activities.MyAlert
 import com.example.neighborhoodemergencyconnect.activities.SettingsActivity
+import com.example.neighborhoodemergencyconnect.activities.VolunteerDashboard
 import com.example.neighborhoodemergencyconnect.activities.VolunteerReq
+import com.example.neighborhoodemergencyconnect.activities.citizenDashboard
 import kotlinx.coroutines.launch
 import com.example.neighborhoodemergencyconnect.api.RetrofitInstance
 import com.example.neighborhoodemergencyconnect.databinding.FragmentProfileBinding
@@ -53,6 +55,27 @@ class ProfileFragment : Fragment() {
         }
         fetchProfile()
 
+        binding.cardLogout.setOnClickListener {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Logout")
+                .setMessage("Are you sure you want to logout?")
+                .setPositiveButton("Logout") { _, _ ->
+                   val sharedPreferences = requireContext().getSharedPreferences("NEC_APP", Context.MODE_PRIVATE)
+                    sharedPreferences.edit().remove("token").apply()
+                    Toast.makeText(
+                        context,
+                        "Logged out successfully",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    val intent = Intent(context, LoginActivity::class.java)
+                    startActivity(intent)
+                    requireActivity().finish()
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
+
+        }
+
 
         binding.MyAlerts.setOnClickListener {
             val intent = Intent(requireContext(), MyAlert::class.java)
@@ -61,8 +84,16 @@ class ProfileFragment : Fragment() {
         }
 
         binding.cardDashboard.setOnClickListener {
-            val intent = Intent(requireContext(), DashboardActivity::class.java)
-            startActivity(intent)
+            if( binding.chipRole.text=="ADMIN") {
+                val intent = Intent(requireContext(), DashboardActivity::class.java)
+                startActivity(intent)
+            } else if(binding.chipRole.text=="CITIZEN"){
+                val intent = Intent(requireContext(), citizenDashboard::class.java)
+                startActivity(intent)
+            }else if(binding.chipRole.text=="VOLUNTEER") {
+                val intent = Intent(requireContext(), VolunteerDashboard::class.java)
+                startActivity(intent)
+            }
         }
 
         binding.VolunteerReqCard.setOnClickListener {
@@ -86,7 +117,7 @@ class ProfileFragment : Fragment() {
      fun fetchProfile() {
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-
+                if (_binding == null || !isAdded) return@launch
                 val sharedPreferences =
                     requireContext().getSharedPreferences("NEC_APP", Context.MODE_PRIVATE)
 
@@ -96,16 +127,18 @@ class ProfileFragment : Fragment() {
                 if (response.isSuccessful) {
                     val user = response.body()?.user
                     sharedPreferences.edit().putString("role",user?.role).apply()
-                    if(_binding==null) return@launch
+                    if (_binding == null || !isAdded) return@launch
                     if (user != null) {
                         updateUI(user)
                     }
                 }
 
             } catch (e: Exception) {
+                if (!isAdded || _binding == null) return@launch
+
                 Toast.makeText(
-                    requireContext(),
-                    e.message,
+                    context,
+                    e.message ?: "Unknown error",
                     Toast.LENGTH_LONG
                 ).show()
                 e.printStackTrace()
@@ -121,6 +154,8 @@ class ProfileFragment : Fragment() {
     }
 
     private fun updateUI(user: UserProfile) {
+        if (_binding == null || !isAdded) return
+
         binding.tvName.text = user.name
         binding.tvEmail.text = user.email
         binding.chipRole.text = user.role.uppercase()
@@ -166,6 +201,7 @@ class ProfileFragment : Fragment() {
 
 private fun sendVolunteerRequest() {
     lifecycleScope.launch {
+        if (_binding == null || !isAdded) return@launch
         try {
             val sharedPreferences =
                 requireContext().getSharedPreferences("NEC_APP", Context.MODE_PRIVATE)
@@ -187,10 +223,11 @@ private fun sendVolunteerRequest() {
                 ).show()
             }
         } catch (e: Exception) {
+            if (!isAdded || _binding == null) return@launch
             Toast.makeText(
                 requireContext(),
                 e.message,
-                Toast.LENGTH_LONG
+                Toast.LENGTH_SHORT
             ).show()
             e.printStackTrace()
         }

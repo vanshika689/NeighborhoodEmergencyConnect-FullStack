@@ -1,26 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#F8F9FC">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="16dp"
-        android:layout_marginTop="40dp">
+        android:padding="16dp">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="@color/black"
-            android:layout_marginBottom="12dp"/>
+        <TextView
+            android:id="@+id/tvAppName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="CIVICGUARD"
+            android:textColor="#0056A3"
+            android:textSize="32sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Alerts"
+            android:textColor="#B71C1C"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="7dp"
+            android:text="Track your reported emergencies and active updates."
+            android:textColor="#757575"
+            android:textSize="12sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
             android:orientation="horizontal">
 
             <com.google.android.material.textfield.TextInputLayout
@@ -28,31 +51,45 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="Status">
+                android:hint="Status"
+                app:boxBackgroundColor="#FFFFFF"
+                app:boxCornerRadiusTopStart="16dp"
+                app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp"
+                app:boxCornerRadiusBottomEnd="16dp"
+                app:boxStrokeColor="#DADCE0">
 
                 <AutoCompleteTextView
                     android:id="@+id/statusDropdown"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="none"/>
+                    android:inputType="none" />
+
             </com.google.android.material.textfield.TextInputLayout>
 
             <Space
                 android:layout_width="12dp"
-                android:layout_height="1dp"/>
+                android:layout_height="1dp" />
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="Category">
+                android:hint="Category"
+                app:boxBackgroundColor="#FFFFFF"
+                app:boxCornerRadiusTopStart="16dp"
+                app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp"
+                app:boxCornerRadiusBottomEnd="16dp"
+                app:boxStrokeColor="#DADCE0">
 
                 <AutoCompleteTextView
                     android:id="@+id/categoryDropdown"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="none"/>
+                    android:inputType="none" />
+
             </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
@@ -62,9 +99,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_marginTop="12dp"
-            android:clipToPadding="false"
-            android:paddingBottom="100dp"/>
+            android:layout_marginTop="10dp" />
 
     </LinearLayout>
 
@@ -74,8 +109,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="20dp"
-        android:contentDescription="Add Alert"
-        android:src="@drawable/plus"
-        app:tint="@android:color/white"/>
+        android:src="@android:drawable/ic_input_add"
+        app:backgroundTint="#EF5350" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

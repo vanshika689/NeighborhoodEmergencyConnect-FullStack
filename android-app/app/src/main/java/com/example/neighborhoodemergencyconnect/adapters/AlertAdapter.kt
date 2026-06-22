@@ -8,6 +8,7 @@ import com.example.neighborhoodemergencyconnect.databinding.ItemAlertBinding
 import com.example.neighborhoodemergencyconnect.models.Alert
 import java.text.SimpleDateFormat
 import java.util.Locale
+import android.R
 import java.util.TimeZone
 
 class AlertAdapter(private val alerts: MutableList<Alert>, private val onClick: (Alert)-> Unit) : RecyclerView.Adapter<AlertAdapter.AlertViewHolder>(){
@@ -22,11 +23,18 @@ class AlertAdapter(private val alerts: MutableList<Alert>, private val onClick: 
     override fun onBindViewHolder(holder: AlertViewHolder, position: Int) {
         val alert = alerts[position]
         holder.binding.tvType.text = alert.title
-        holder.binding.tvLocation.text = "📍 " + alert.location
+        holder.binding.tvLocation.text = "📍 " + alert.shortAddress
         holder.binding.tvTime.text = getRelativeTime(alert.createdAt)
         holder.binding.tvStatus.text = alert.status
         holder.itemView.setOnClickListener{
             onClick(alert)
+        }
+        when (alert.title.trim()) {
+            "Fire" -> holder.binding.imgCategory.setImageResource(com.example.neighborhoodemergencyconnect.R.drawable.fireal)
+            "Accident" ->holder.binding.imgCategory.setImageResource(com.example.neighborhoodemergencyconnect.R.drawable.acci)
+            "Crime" -> holder.binding.imgCategory.setImageResource(com.example.neighborhoodemergencyconnect.R.drawable.crime)
+            "Disaster" -> holder.binding.imgCategory.setImageResource(com.example.neighborhoodemergencyconnect.R.drawable.dis)
+            else -> holder.binding.imgCategory.setImageResource(com.example.neighborhoodemergencyconnect.R.drawable.other)
         }
     }
 
