@@ -11,14 +11,17 @@ router.post("/", authMiddleware, async (req, res) => {
 
     try {
 
-        const { title, description, location ,imageUrl} = req.body;
+        const { title, description,shortAddress,fullAddress,latitude,longitude ,imageUrl} = req.body;
 
         const alert = new Alert({
-            title,
-            description,
-            location,
-            imageUrl,
-            createdBy: req.user.id
+        title,
+        description,
+        shortAddress,
+        fullAddress,
+        latitude,
+        longitude,
+        imageUrl,
+        createdBy: req.user.id
         });
 
         await alert.save();
@@ -31,7 +34,7 @@ router.post("/", authMiddleware, async (req, res) => {
             await sendNotification(
                 user.fcmToken,
                 "🚨 New Emergency Alert",
-                `${title} reported at ${location}`
+                `${title} reported at ${shortAddress}`
             );
 
         }

@@ -34,7 +34,6 @@
             android:orientation="vertical"
             android:padding="24dp">
 
-            <!-- Profile Section -->
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/ivProfile"
                 android:layout_width="100dp"
@@ -74,7 +73,6 @@
                 android:textColor="#1976d2"
                 app:chipBackgroundColor="#E3F2FD" />
 
-            <!-- Dashboard Card -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardDashboard"
                 android:layout_width="match_parent"
@@ -123,7 +121,6 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Volunteer Card -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardVolunteer"
                 android:layout_width="match_parent"
@@ -155,7 +152,7 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- List Menu Card -->
+
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

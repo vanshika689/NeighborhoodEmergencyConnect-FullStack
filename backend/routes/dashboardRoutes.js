@@ -88,7 +88,6 @@ router.get("/", authMiddleware, async (req,res)=>{
             alertsrespondedbyme :  alertsrespondedbyme,
             activealertsrespondedbyme: activealertsrespondedbyme,
             resolvedalertsrespondedbyme : resolvedalertsrespondedbyme
-
         });
 
     } else if(req.user.role==="citizen"){

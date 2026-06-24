@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
 import com.example.neighborhoodemergencyconnect.activities.AboutActivity
 import com.example.neighborhoodemergencyconnect.activities.DashboardActivity
 import com.example.neighborhoodemergencyconnect.activities.LoginActivity
@@ -159,6 +160,15 @@ class ProfileFragment : Fragment() {
         binding.tvName.text = user.name
         binding.tvEmail.text = user.email
         binding.chipRole.text = user.role.uppercase()
+        val uploadedImageUrl = user.profileImage
+        if(!uploadedImageUrl.isNullOrEmpty()){
+            Glide.with(this)
+                .load(uploadedImageUrl)
+                .into(binding.ivProfile)
+
+
+        }
+
         if(user.role == "citizen"){
             binding.cardVolunteer.visibility = View.VISIBLE
         }else{

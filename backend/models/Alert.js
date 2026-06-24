@@ -8,10 +8,25 @@ const alertSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    location: {
-        type: String,
-        required: true
-    },
+    shortAddress: {
+    type: String,
+    required: true
+},
+
+fullAddress: {
+    type: String,
+    required: true
+},
+
+latitude: {
+    type: Number,
+    required: true
+},
+
+longitude: {
+    type: Number,
+    required: true
+},
     status: {
         type: String,
         enum: ["active", "resolved"],

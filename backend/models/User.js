@@ -28,6 +28,10 @@ const userSchema = new mongoose.Schema({
     fcmToken: {
         type: String,
         default: ""
+    },
+    profileImage: {
+        type: String,
+        default: ""
     }
     
 });

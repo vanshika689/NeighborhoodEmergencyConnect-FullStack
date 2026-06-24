@@ -100,12 +100,80 @@ router.post("/login", async (req, res) => {
 });
 
 router.get("/profile",authMiddleware,async (req,res) => {
+    try{
     const user = await User.findById(req.user.id).select("-password");
+    
+    if(!user){
+        return res.status(404).json({
+            message: "User not found"
+        });
+    }
+
     res.status(200).json({
-        message: "Protected Route Accessed",
+        message: "Profile fetched Successfully",
         user
     });
-})
+} catch(error){
+    res.status(500).json({message: error.message});
+}
+});
+
+router.put("/profile",authMiddleware,async(req,res)=>{
+    console.log("PROFILE UPDATE BODY:", req.body);
+    try{
+      
+        const { name, email, profileImage} = req.body;
+        const user = await User.findById(req.user.id);
+        if (name) user.name = name;
+        if (email) user.email = email;
+        if (profileImage) user.profileImage = profileImage;
+        console.log("Before Save:", user);
+        await user.save();
+        console.log("After Save:", user);
+
+        res.status(200).json({
+            message: "Profile updated successfully",
+
+        });
+    } catch(error){
+        res.status(500).json({message : error.message});
+    }
+});
+
+router.put("/change-password",authMiddleware,async(req,res)=>{
+    try{
+        const { oldPassword, newPassword }= req.body;
+        const user = await User.findById(req.user.id);
+         if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+        const isMatch = await bcrypt.compare(oldPassword,user.password);
+        if(!isMatch){
+            return res.status(400).json({
+                success: false,
+                message: "Old password is incorrect"
+            });
+        }
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(
+            newPassword,
+            salt
+        );
+        await user.save();
+        res.status(200).json({
+            success: true,
+            message: "Password updated successfully"
+        });
+    } catch(error){
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    };
+});
 
 router.patch("/request-volunteer", authMiddleware, async (req,res)=>{
     try{

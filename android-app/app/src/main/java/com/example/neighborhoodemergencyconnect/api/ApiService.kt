@@ -2,7 +2,10 @@ package com.example.neighborhoodemergencyconnect.api
 import com.example.neighborhoodemergencyconnect.models.AddAlertReq
 import com.example.neighborhoodemergencyconnect.models.AlertDetailsResponse
 import com.example.neighborhoodemergencyconnect.models.AlertResponse
+import com.example.neighborhoodemergencyconnect.models.ChangePasswordReq
+import com.example.neighborhoodemergencyconnect.models.ChangePasswordResponse
 import com.example.neighborhoodemergencyconnect.models.DashboardResponse
+import com.example.neighborhoodemergencyconnect.models.EditProfileResponse
 import com.example.neighborhoodemergencyconnect.models.FcmTokenRequest
 import com.example.neighborhoodemergencyconnect.models.LoginRequest
 import com.example.neighborhoodemergencyconnect.models.LoginResponse
@@ -11,6 +14,7 @@ import com.example.neighborhoodemergencyconnect.models.ProfileResponse
 import com.example.neighborhoodemergencyconnect.models.RegisterRequest
 import com.example.neighborhoodemergencyconnect.models.RegisterResponse
 import com.example.neighborhoodemergencyconnect.models.ReqVol
+import com.example.neighborhoodemergencyconnect.models.UpdateProfileRequest
 import com.example.neighborhoodemergencyconnect.models.UploadResponse
 import com.example.neighborhoodemergencyconnect.models.VolReq
 import okhttp3.MultipartBody
@@ -21,6 +25,7 @@ import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 
@@ -106,6 +111,22 @@ interface ApiService {
         @Body request: FcmTokenRequest
     ): Response<MessageResponse>
 
+    @GET("api/auth/profile")
+    suspend fun loadProfile(
+        @Header("Authorization") token: String,
+    ): Response<ProfileResponse>
+
+    @PUT("api/auth/profile")
+    suspend fun updateProfile(
+        @Header("Authorization") token: String,
+        @Body request: UpdateProfileRequest
+    ): Response<EditProfileResponse>
+
+    @PUT("api/auth/change-password")
+    suspend fun changePassword(
+        @Header("Authorization") token: String,
+        @Body request: ChangePasswordReq
+    ): Response<ChangePasswordResponse>
 }
 
 

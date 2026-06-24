@@ -1,10 +1,7 @@
 package com.example.neighborhoodemergencyconnect.models
 
-data class UserProfile(
-    val _id: String,
+data class UpdateProfileRequest(
     val name: String,
     val email: String,
-    val role: String,
-    val volunteerRequestStatus : String,
     val profileImage: String?
 )
