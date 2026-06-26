@@ -9,6 +9,9 @@ const alertRoutes = require("./routes/alertRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes")
 const uploadRoutes = require("./routes/uploadRoutes");
 
+
+
+
 connectDB();
 
 app.use(express.json());
@@ -18,11 +21,6 @@ app.use("/api/auth", authRoutes);
 app.use("/api/alerts", alertRoutes);
 app.use("/api/dashboard",dashboardRoutes);
 app.use("/api/upload", uploadRoutes);
-
-app.get("/", (req, res) => {
-    res.send("Server Running");
-});
-
 
 
 app.listen(5000, "0.0.0.0" , () => {

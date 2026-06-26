@@ -46,7 +46,38 @@ longitude: {
     imageUrl : {
         type: String,
         default: ""
+    },
+    aiAnalysis: {
+        isFake: {
+            type: Boolean,
+            default: null
+        },
+        fakeReason: {
+            type: String,
+            default: ""
+        },
+        severity: {
+            type: String,
+            enum: ["LOW", "MEDIUM", "HIGH", "CRITICAL", null],
+            default: null
+        },
+        severityReason: {
+            type: String,
+            default: ""
+        },
+        confidence: {
+            type: String,
+            enum: ["LOW", "MEDIUM", "HIGH",null],
+            default: null
+        }
+    },
+    resolvedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        default: null
     }
+    
+
 
 }, {
     timestamps: true
