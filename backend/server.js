@@ -22,7 +22,8 @@ app.use("/api/alerts", alertRoutes);
 app.use("/api/dashboard",dashboardRoutes);
 app.use("/api/upload", uploadRoutes);
 
+const PORT = process.env.PORT || 5000;
 
-app.listen(5000, "0.0.0.0" , () => {
-    console.log("Server is running on port 5000");
+app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Server is running on port ${PORT}`);
 });
