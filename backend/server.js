@@ -10,8 +10,6 @@ const dashboardRoutes = require("./routes/dashboardRoutes")
 const uploadRoutes = require("./routes/uploadRoutes");
 
 
-
-
 connectDB();
 
 app.use(express.json());
