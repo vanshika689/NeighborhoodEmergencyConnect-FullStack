@@ -52,8 +52,6 @@ class LoginActivity : AppCompatActivity() {
                        val sharedPreferences = getSharedPreferences("NEC_APP", MODE_PRIVATE)
                         sharedPreferences.edit().putString("token", loginResponse?.token).putString("role", loginResponse?.role).apply()
 
-                        Toast.makeText(this@LoginActivity, loginResponse?.message ?: "Login Successful", Toast.LENGTH_SHORT).show()
-
                         val intent = Intent(this@LoginActivity, MainActivity::class.java)
                         startActivity(intent)
                         finish()

@@ -28,7 +28,6 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(binding.root)
         //Default Fragment
-        setContentView(binding.root)
         replaceFragment(MapFragment())
         if (
             ContextCompat.checkSelfPermission(

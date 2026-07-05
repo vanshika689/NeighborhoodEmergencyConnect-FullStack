@@ -54,6 +54,7 @@ class MapFragment : Fragment() {
             PreferenceManager.getDefaultSharedPreferences(requireContext())
         )
 
+
         binding.mapView.setTileSource(org.osmdroid.tileprovider.tilesource.TileSourceFactory.MAPNIK)
         binding.mapView.setMultiTouchControls(true)
         val mapController = binding.mapView.controller
@@ -174,6 +175,8 @@ class MapFragment : Fragment() {
                     ).show()
                 }
             } catch (e: Exception) {
+                if (!isAdded || _binding==null) return@launch
+
                 Toast.makeText(
                     requireContext(),
                     "Error loading alerts: ${e.message}",
@@ -207,7 +210,7 @@ class MapFragment : Fragment() {
 
     private fun filterMarkers(category: String) {
         if (_binding == null || !isAdded) return
-        val currentBinding = _binding ?: return // Safety check
+        val currentBinding = _binding ?: return
         currentBinding.mapView.overlays.clear()
 
         val filteredAlerts =

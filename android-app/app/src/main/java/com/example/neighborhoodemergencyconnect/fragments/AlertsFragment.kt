@@ -1,6 +1,7 @@
 package com.example.neighborhoodemergencyconnect.fragments
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -35,7 +36,6 @@ class AlertsFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -87,8 +87,7 @@ class AlertsFragment : Fragment() {
         )
 
         binding.categoryDropdown.setAdapter(
-            ArrayAdapter(
-                requireContext(),
+            ArrayAdapter(         requireContext(),
                 android.R.layout.simple_list_item_1,
                 categoryItems
             )
@@ -134,19 +133,17 @@ class AlertsFragment : Fragment() {
                             .show()
                     }
                 } else {
+                    Log.e("ALERT_DEBUG", "Error code: ${response.code()}")
+                    Log.e("ALERT_DEBUG", "Error body: ${response.errorBody()?.string()}")
                     Toast.makeText(requireContext(), "Failed to fetch Alerts", Toast.LENGTH_SHORT)
                         .show()
                 }
-
-            } catch(e: CancellationException){
-                throw e
             }
             catch (e: Exception) {
-                Toast.makeText(
-                    requireContext(),
-                    "Error fetching alerts: ${e.message}",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Log.e("ALERT_DEBUG", "Exception type: ${e.javaClass.simpleName}")
+                Log.e("ALERT_DEBUG", "Exception message: ${e.message}")
+                Log.e("ALERT_DEBUG", "Cause: ${e.cause?.message}")
+                Toast.makeText(context, "${e.javaClass.simpleName}: ${e.message}", Toast.LENGTH_LONG).show()
             }
         }
     }

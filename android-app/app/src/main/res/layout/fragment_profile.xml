@@ -4,22 +4,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#fcf9f8">
+    android:background="#F5F6FA">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#ffffff"
-        app:elevation="0dp">
+        app:elevation="2dp">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/topAppBar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:title="CIVICGUARD"
+            app:title="CivicGuard"
             app:titleCentered="true"
-            app:titleTextColor="#b71c1c"
-            app:titleTextAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
+            app:titleTextColor="#1565C0"/>
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -38,20 +37,22 @@
                 android:id="@+id/ivProfile"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
+                android:layout_marginTop="8dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/prof"
                 app:shapeAppearanceOverlay="@style/ShapeAppearance.MaterialComponents.MediumComponent"
-                app:strokeColor="#dcd9d9"
-                app:strokeWidth="1dp" />
+                app:strokeColor="#1565C0"
+                app:strokeWidth="2dp" />
 
             <TextView
                 android:id="@+id/tvName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:fontFamily="@font/montserrat_bold"
                 android:text="User XYZ"
-                android:textColor="#1c1b1b"
-                android:textSize="24sp"
+                android:textColor="#1A1A2E"
+                android:textSize="22sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -59,9 +60,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
+                android:fontFamily="@font/poppins_regular"
                 android:text="ABC@example.com"
-                android:textColor="#494544"
-                android:textSize="16sp" />
+                android:textColor="#6B7280"
+                android:textSize="14sp" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipRole"
@@ -69,20 +71,25 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="Citizen"
-                android:textColor="#1976d2"
-                app:chipBackgroundColor="#E3F2FD" />
+                android:fontFamily="@font/montserrat_semibold"
+                android:text="CITIZEN"
+                android:textColor="#1565C0"
+                android:textSize="12sp"
+                app:chipBackgroundColor="#E3F2FD"
+                app:chipStrokeColor="#1565C0"
+                app:chipStrokeWidth="1dp"/>
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardDashboard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="24dp"
                 android:clickable="true"
                 android:focusable="true"
                 app:cardBackgroundColor="#FFFFFF"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp">
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:strokeWidth="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -92,8 +99,8 @@
                     android:padding="20dp">
 
                     <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
                         android:src="@drawable/dashboard" />
 
                     <LinearLayout
@@ -106,18 +113,26 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:fontFamily="@font/montserrat_bold"
                             android:text="Dashboard"
-                            android:textColor="#1c1b1b"
-                            android:textSize="18sp"
+                            android:textColor="#1A1A2E"
+                            android:textSize="16sp"
                             android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:fontFamily="@font/poppins_regular"
                             android:text="System status &amp; active events"
-                            android:textColor="#494544"
+                            android:textColor="#6B7280"
                             android:textSize="12sp" />
                     </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/chevron"
+                        />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -126,42 +141,58 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                app:cardCornerRadius="12dp">
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:strokeWidth="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="20dp">
 
                     <TextView
                         android:id="@+id/tvVolunteerStatus"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/montserrat_bold"
                         android:text="Become a Volunteer"
+                        android:textColor="#1A1A2E"
                         android:textSize="16sp"
                         android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/poppins_regular"
+                        android:text="Help your community by responding to alerts"
+                        android:textColor="#6B7280"
+                        android:textSize="12sp" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnVolunteerRequest"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:backgroundTint="#0056a3"
-                        android:text="Send Request" />
+                        android:layout_marginTop="12dp"
+                        android:backgroundTint="#1565C0"
+                        android:fontFamily="@font/montserrat_semibold"
+                        android:text="Send Request"
+                        android:textAllCaps="false"
+                        app:cornerRadius="8dp"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
-
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="24dp"
                 app:cardBackgroundColor="#ffffff"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="0dp"
-                app:strokeColor="#dcd9d9"
-                app:strokeWidth="1dp">
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:strokeWidth="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -177,6 +208,7 @@
                         android:focusable="true"
                         android:gravity="center_vertical"
                         android:padding="16dp">
+
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
@@ -187,20 +219,23 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="16dp"
                             android:layout_weight="1"
+                            android:fontFamily="@font/poppins_regular"
                             android:text="My Alerts"
-                            android:textColor="#1c1b1b" />
+                            android:textColor="#1A1A2E"
+                            android:textSize="15sp"/>
 
                         <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@drawable/chevron" />
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/chevron"
+               />
                     </LinearLayout>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:layout_marginHorizontal="16dp"
-                        android:background="#dcd9d9" />
+                        android:background="#F3F4F6" />
 
                     <LinearLayout
                         android:id="@+id/VolunteerReqCard"
@@ -211,6 +246,7 @@
                         android:focusable="true"
                         android:gravity="center_vertical"
                         android:padding="16dp">
+
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
@@ -222,19 +258,23 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="16dp"
                             android:layout_weight="1"
+                            android:fontFamily="@font/poppins_regular"
                             android:text="Volunteer Requests"
-                            android:textColor="#1c1b1b" />
+                            android:textColor="#1A1A2E"
+                            android:textSize="15sp"/>
+
                         <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@drawable/chevron" />
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/chevron"
+                          />
                     </LinearLayout>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:layout_marginHorizontal="16dp"
-                        android:background="#dcd9d9" />
+                        android:background="#F3F4F6" />
 
                     <LinearLayout
                         android:id="@+id/cardSettings"
@@ -245,6 +285,7 @@
                         android:focusable="true"
                         android:gravity="center_vertical"
                         android:padding="16dp">
+
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
@@ -255,15 +296,23 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="16dp"
                             android:layout_weight="1"
+                            android:fontFamily="@font/poppins_regular"
                             android:text="Settings"
-                            android:textColor="#1c1b1b" />
+                            android:textColor="#1A1A2E"
+                            android:textSize="15sp"/>
+
                         <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@drawable/chevron" />
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/chevron"
+                            />
                     </LinearLayout>
 
-                    <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginHorizontal="16dp" android:background="#dcd9d9" />
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginHorizontal="16dp"
+                        android:background="#F3F4F6" />
 
                     <LinearLayout
                         android:id="@+id/cardAbout"
@@ -274,15 +323,34 @@
                         android:focusable="true"
                         android:gravity="center_vertical"
                         android:padding="16dp">
-                        <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/abt" />
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:layout_weight="1" android:text="About" android:textColor="#1c1b1b" />
-                        <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/chevron" />
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/abt" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/poppins_regular"
+                            android:text="About"
+                            android:textColor="#1A1A2E"
+                            android:textSize="15sp"/>
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/chevron"
+                            />
                     </LinearLayout>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:layout_marginHorizontal="16dp" android:background="#dcd9d9" />
+                        android:layout_marginHorizontal="16dp"
+                        android:background="#F3F4F6" />
 
                     <LinearLayout
                         android:id="@+id/cardLogout"
@@ -293,6 +361,7 @@
                         android:focusable="true"
                         android:gravity="center_vertical"
                         android:padding="16dp">
+
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
@@ -303,18 +372,20 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="16dp"
                             android:layout_weight="1"
-                            android:text="LogOut"
-                            android:textColor="#1c1b1b" />
+                            android:fontFamily="@font/poppins_regular"
+                            android:text="Log Out"
+                            android:textColor="#C62828"
+                            android:textSize="15sp"/>
+
                         <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@drawable/chevron" />
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/chevron"
+                          />
                     </LinearLayout>
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
-
-
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

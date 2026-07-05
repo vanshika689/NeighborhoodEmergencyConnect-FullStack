@@ -1,134 +1,422 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:background="#F5F7FB">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        <FrameLayout android:layout_width="match_parent" android:layout_height="320dp">
+            <ImageView android:id="@+id/ivAlertImage" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="centerCrop"/>
+            <View android:layout_width="match_parent" android:layout_height="match_parent" android:background="@drawable/bg_header_drawable" />
 
-        <ImageView
-            android:id="@+id/ivAlertImage"
-            android:layout_width="match_parent"
-            android:layout_height="250dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_launcher_background"/>
+            <TextView
+                android:id="@+id/tvImageLoading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/poppins_regular"
+                android:text="Loading image..."
+                android:textColor="@android:color/white" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="20dp">
 
-        <LinearLayout
+                <LinearLayout android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <TextView android:id="@+id/tvTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Fire Emergency"
+                        android:textColor="@android:color/white"
+                        android:textSize="28sp"
+                        android:fontFamily="@font/montserrat_bold"/>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/tvStatus"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_status_active"
+                            android:paddingHorizontal="14dp"
+                            android:paddingVertical="5dp"
+                            android:text="ACTIVE"
+                            android:textColor="@android:color/white"/>
+
+                        <TextView
+                            android:id="@+id/tvFakeStatus"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/bg_pill_green"
+                            android:paddingHorizontal="14dp"
+                            android:paddingVertical="5dp"
+                            android:text="REAL"
+                            android:textColor="@android:color/white"/>
+
+                        <TextView android:id="@+id/tvSeverity"  android:minWidth="95dp" android:gravity="center" android:maxLines="1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:background="@drawable/bg_pill_red" android:paddingHorizontal="14dp" android:paddingVertical="6dp" android:text="CRITICAL" android:textColor="@android:color/white"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+            </LinearLayout>
+        </FrameLayout>
+        <com.google.android.material.card.MaterialCardView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_margin="16dp" app:cardCornerRadius="22dp" app:strokeColor="#E2E8F0" app:strokeWidth="1dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="20dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📝 Description" android:textStyle="bold" android:fontFamily="@font/montserrat_bold" android:textSize="18sp"/>
+                <TextView android:id="@+id/tvDescription" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:fontFamily="@font/poppins_regular" android:textColor="#475569" android:text="Alert description goes here."/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="3dp"
+            app:strokeColor="#E2E8F0"
+            app:strokeWidth="1dp">
 
-            <TextView
-                android:id="@+id/tvTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Fire Emergency"
-                android:textSize="24sp"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:id="@+id/tvStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="ACTIVE"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="Description"
-                android:textStyle="bold"
-                android:textSize="18sp"/>
-
-
-            <TextView
-                android:id="@+id/tvDescription"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Emergency description"/>
+                android:orientation="vertical"
+                android:padding="20dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="Location"
-                android:textStyle="bold"
-                android:textSize="18sp"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/tvLocation"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Hostel Road"/>
+                    <ImageView
+                        android:layout_width="26dp"
+                        android:layout_height="26dp"
+                        android:src="@drawable/ai"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="Created By"
-                android:textStyle="bold"
-                android:textSize="18sp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:text="AI Analysis"
+                        android:textColor="#1E293B"
+                        android:textSize="20sp"
+                        android:fontFamily="@font/montserrat_bold"/>
 
-            <TextView
-                android:id="@+id/tvCreatedBy"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="XYZ"/>
+                </LinearLayout>
 
-            <TextView
-                android:id="@+id/tvCreatorEmail"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="abc@gmail.com"/>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="18dp"
+                    android:background="#E2E8F0"/>
 
-            <TextView
-                android:id="@+id/tvCreatedAt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="3 June 2026, 10:30 PM"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Confidence"
+                    android:textStyle="bold"
+                    android:textColor="#1565C0"
+                    android:fontFamily="@font/montserrat_semibold"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="Responders"
-                android:textStyle="bold"
-                android:textSize="18sp"/>
+                <TextView
+                    android:id="@+id/tvConfidence"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="HIGH"
+                    android:textSize="17sp"
+                    android:textColor="#1E293B"
+                    android:fontFamily="@font/poppins_regular"/>
 
-            <TextView
-                android:id="@+id/tvRespondersCount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0 Responders"
-                android:layout_marginTop="8dp"/>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="18dp"
+                    android:layout_marginBottom="18dp"
+                    android:background="#EEF2F7"/>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvResponders"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Severity Analysis"
+                    android:textStyle="bold"
+                    android:textColor="#EF4444"
+                    android:fontFamily="@font/montserrat_semibold"/>
+
+                <TextView
+                    android:id="@+id/tvSeverityReason"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Immediate action required."
+                    android:textColor="#475569"
+                    android:fontFamily="@font/poppins_regular"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="18dp"
+                    android:layout_marginBottom="18dp"
+                    android:background="#EEF2F7"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Authenticity"
+                    android:textStyle="bold"
+                    android:textColor="#22C55E"
+                    android:fontFamily="@font/montserrat_semibold"/>
+
+                <TextView
+                    android:id="@+id/tvFakeReason"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Appears to be genuine."
+                    android:textColor="#475569"
+                    android:fontFamily="@font/poppins_regular"/>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="18dp"
+            app:strokeColor="#E2E8F0"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
-                android:layout_marginTop="8dp"/>
+                android:orientation="vertical"
+                android:padding="20dp">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnRespond"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="📍 Location"
+                    android:textSize="18sp"
+                    android:textColor="#1E293B"
+                    android:fontFamily="@font/montserrat_bold"/>
+
+                <TextView
+                    android:id="@+id/tvLocation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:textColor="#475569"
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="Street, City"/>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="20dp"
+            app:cardCornerRadius="18dp"
+            app:strokeColor="#E2E8F0"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="Respond to Alert"/>
+                android:orientation="vertical"
+                android:padding="20dp">
 
-        </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="👤 Reported By"
+                    android:textSize="18sp"
+                    android:fontFamily="@font/montserrat_bold"/>
+
+                <TextView
+                    android:id="@+id/tvCreatedBy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="John Doe"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/montserrat_semibold"/>
+
+                <TextView
+                    android:id="@+id/tvCreatorEmail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="john@gmail.com"
+                    android:textColor="#64748B"
+                    android:fontFamily="@font/poppins_regular"/>
+
+                <TextView
+                    android:id="@+id/tvCreatedAt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="2 hours ago"
+                    android:textColor="#1565C0"
+                    android:fontFamily="@font/poppins_regular"/>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="2dp"
+            app:strokeColor="#E2E8F0"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="👨‍🚒 Responders"
+                    android:textSize="18sp"
+                    android:fontFamily="@font/montserrat_bold"
+                    android:textColor="#1E293B"/>
+
+                <TextView
+                    android:id="@+id/tvRespondersCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="0 Responders"
+                    android:textColor="#64748B"
+                    android:fontFamily="@font/poppins_regular"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvResponders"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:nestedScrollingEnabled="false"/>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+
+        <TextView
+            android:id="@+id/tvResolvedByLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginBottom="8dp"
+            android:text="✅ Resolved By"
+            android:textSize="18sp"
+            android:textColor="#1E293B"
+            android:fontFamily="@font/montserrat_bold"
+            android:visibility="gone"/>
+
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/resolvedByLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="20dp"
+            android:visibility="gone"
+            app:cardCornerRadius="18dp"
+            app:cardBackgroundColor="#ECFDF5"
+            app:strokeColor="#22C55E"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:id="@+id/tvResolvedByName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Volunteer Name"
+                    android:textSize="18sp"
+                    android:textColor="#166534"
+                    android:fontFamily="@font/montserrat_bold"/>
+
+                <TextView
+                    android:id="@+id/tvResolvedByEmail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="volunteer@gmail.com"
+                    android:textColor="#15803D"
+                    android:fontFamily="@font/poppins_regular"/>
+
+                <TextView
+                    android:id="@+id/tvResolvedById"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="ID : 123456"
+                    android:textColor="#15803D"
+                    android:fontFamily="@font/poppins_regular"/>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRespond"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginBottom="14dp"
+            android:text="Respond to Alert"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:fontFamily="@font/montserrat_semibold"
+            android:textColor="@android:color/white"
+            android:backgroundTint="#1565C0"
+            app:cornerRadius="28dp"/>
+
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnResolve"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginBottom="28dp"
+            android:text="Resolve Alert"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:fontFamily="@font/montserrat_semibold"
+            android:textColor="@android:color/white"
+            android:backgroundTint="#16A34A"
+            app:cornerRadius="28dp"/>
 
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>
+

@@ -2,6 +2,7 @@ package com.example.neighborhoodemergencyconnect.activities
 
 import android.content.Context.MODE_PRIVATE
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -28,6 +29,14 @@ class VolunteerReq : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(binding.root)
+        binding.topAppBar.setNavigationOnClickListener {
+            finish()
+        }
+        binding.btnRefresh.setOnClickListener {
+            fetchVolReq()
+        }
+
+
         Adapter = VolReqAdap(
             volReqList,
             onApprove = { user ->
@@ -44,44 +53,80 @@ class VolunteerReq : AppCompatActivity() {
     }
 
     private fun fetchVolReq() {
+
+        binding.progressBar.visibility = View.VISIBLE
+        binding.layoutEmpty.visibility = View.GONE
+        binding.rvVolunteerRequests.visibility = View.GONE
+
         lifecycleScope.launch {
+
             try {
+
                 val token = getSharedPreferences(
                     "NEC_APP",
                     MODE_PRIVATE
                 ).getString("token", null)
-                if (token != null) {
-                    val response = RetrofitInstance.api.getVolReq("$token")
-                    val body = response.body()
-                    if (response.isSuccessful) {
-                        val volReqs = response.body()?.requsers
-                        volReqList.clear()
-                        if (volReqs != null) {
-                            volReqList.addAll(volReqs)
-                        }
-                        Adapter.notifyDataSetChanged()
-                    } else {
-                        Toast.makeText(
-                            this@VolunteerReq,
-                            "Failed to fetch requests",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                } else {
+
+                if (token == null) {
+
+                    binding.progressBar.visibility = View.GONE
+
                     Toast.makeText(
                         this@VolunteerReq,
-                        "Token not Found",
+                        "Token not found",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    return@launch
+                }
+
+                val response = RetrofitInstance.api.getVolReq(token)
+
+                binding.progressBar.visibility = View.GONE
+
+                if (response.isSuccessful) {
+
+                    val requests = response.body()?.requsers ?: emptyList()
+
+                    volReqList.clear()
+                    volReqList.addAll(requests)
+
+                    Adapter.notifyDataSetChanged()
+
+                    if (requests.isEmpty()) {
+
+                        binding.layoutEmpty.visibility = View.VISIBLE
+                        binding.rvVolunteerRequests.visibility = View.GONE
+
+                    } else {
+
+                        binding.layoutEmpty.visibility = View.GONE
+                        binding.rvVolunteerRequests.visibility = View.VISIBLE
+
+                    }
+
+                } else {
+
+                    binding.layoutEmpty.visibility = View.VISIBLE
+
+                    Toast.makeText(
+                        this@VolunteerReq,
+                        "Failed to fetch volunteer requests",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
+
             } catch (e: Exception) {
+
+                binding.progressBar.visibility = View.GONE
+                binding.layoutEmpty.visibility = View.VISIBLE
+
                 Toast.makeText(
                     this@VolunteerReq,
-                    "Error fetching volunteer requests: ${e.message}",
-                    Toast.LENGTH_SHORT
+                    e.localizedMessage ?: "Something went wrong",
+                    Toast.LENGTH_LONG
                 ).show()
             }
-
         }
     }
 

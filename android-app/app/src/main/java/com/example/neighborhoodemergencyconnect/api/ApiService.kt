@@ -1,5 +1,6 @@
 package com.example.neighborhoodemergencyconnect.api
 import com.example.neighborhoodemergencyconnect.models.AddAlertReq
+import com.example.neighborhoodemergencyconnect.models.AlertDetailResponse
 import com.example.neighborhoodemergencyconnect.models.AlertDetailsResponse
 import com.example.neighborhoodemergencyconnect.models.AlertResponse
 import com.example.neighborhoodemergencyconnect.models.ChangePasswordReq
@@ -14,6 +15,7 @@ import com.example.neighborhoodemergencyconnect.models.ProfileResponse
 import com.example.neighborhoodemergencyconnect.models.RegisterRequest
 import com.example.neighborhoodemergencyconnect.models.RegisterResponse
 import com.example.neighborhoodemergencyconnect.models.ReqVol
+import com.example.neighborhoodemergencyconnect.models.ResolveRequest
 import com.example.neighborhoodemergencyconnect.models.UpdateProfileRequest
 import com.example.neighborhoodemergencyconnect.models.UploadResponse
 import com.example.neighborhoodemergencyconnect.models.VolReq
@@ -59,7 +61,7 @@ interface ApiService {
     @GET("api/alerts/{id}")
     suspend fun getAlertById(
         @Path("id") alertId: String
-    ): Response<AlertDetailsResponse>
+    ): Response<AlertDetailResponse>
 
     @GET("api/auth/profile")
     suspend fun getProfile(
@@ -127,6 +129,13 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Body request: ChangePasswordReq
     ): Response<ChangePasswordResponse>
+
+    @PATCH("api/alerts/{id}/resolve")
+    suspend fun updateAlertStatus(
+        @Header("Authorization") token: String,
+        @Path("id") id: String,
+        @Body request: ResolveRequest
+    ): Response<AlertDetailsResponse>
 }
 
 

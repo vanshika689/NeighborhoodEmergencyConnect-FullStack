@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8F9FC">
+    android:background="#F5F6FA">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,32 +17,36 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="CIVICGUARD"
-            android:textColor="#0056A3"
-            android:textSize="32sp"
+            android:fontFamily="@font/montserrat_bold"
+            android:text="CivicGuard"
+            android:textColor="#1565C0"
+            android:textSize="28sp"
+            android:letterSpacing="0.05"
             android:textStyle="bold" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/montserrat_bold"
             android:text="Alerts"
-            android:textColor="#B71C1C"
-            android:textSize="24sp"
+            android:textColor="#C62828"
+            android:textSize="22sp"
             android:textStyle="bold" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="7dp"
+            android:layout_marginBottom="8dp"
+            android:fontFamily="@font/poppins_regular"
             android:text="Track your reported emergencies and active updates."
-            android:textColor="#757575"
+            android:textColor="#6B7280"
             android:textSize="12sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="4dp"
             android:orientation="horizontal">
 
             <com.google.android.material.textfield.TextInputLayout
@@ -53,16 +56,17 @@
                 android:layout_weight="1"
                 android:hint="Status"
                 app:boxBackgroundColor="#FFFFFF"
-                app:boxCornerRadiusTopStart="16dp"
-                app:boxCornerRadiusTopEnd="16dp"
-                app:boxCornerRadiusBottomStart="16dp"
-                app:boxCornerRadiusBottomEnd="16dp"
-                app:boxStrokeColor="#DADCE0">
+                app:boxCornerRadiusTopStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:boxStrokeColor="#1565C0">
 
                 <AutoCompleteTextView
                     android:id="@+id/statusDropdown"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_regular"
                     android:inputType="none" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -78,16 +82,17 @@
                 android:layout_weight="1"
                 android:hint="Category"
                 app:boxBackgroundColor="#FFFFFF"
-                app:boxCornerRadiusTopStart="16dp"
-                app:boxCornerRadiusTopEnd="16dp"
-                app:boxCornerRadiusBottomStart="16dp"
-                app:boxCornerRadiusBottomEnd="16dp"
-                app:boxStrokeColor="#DADCE0">
+                app:boxCornerRadiusTopStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:boxStrokeColor="#1565C0">
 
                 <AutoCompleteTextView
                     android:id="@+id/categoryDropdown"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_regular"
                     android:inputType="none" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -99,7 +104,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_marginTop="10dp" />
+            android:layout_marginTop="12dp" />
 
     </LinearLayout>
 
@@ -108,8 +113,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="20dp"
+        android:layout_margin="16dp"
         android:src="@android:drawable/ic_input_add"
-        app:backgroundTint="#EF5350" />
+        app:backgroundTint="#C62828"
+        app:fabSize="normal" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -52,7 +52,6 @@ class ChangePasswordActivity : AppCompatActivity() {
                 confirmPassword != newPassword -> {
                     binding.etConfirmPassword.error = "Passwords do not match"
                 }
-
                 else -> {
                     changePassword(oldPassword, newPassword)
                 }
@@ -82,13 +81,9 @@ class ChangePasswordActivity : AppCompatActivity() {
                     finish()
 
                 } else {
-
-
                     Log.e("CHANGE_PASSWORD",
                         "Code: ${response.code()}\nError: ${response.errorBody()?.string()}"
                     )
-
-
                     Toast.makeText(
                         this@ChangePasswordActivity,
                         response.body()?.message ?: "Password does not Match",

@@ -29,7 +29,7 @@
                 android:layout_gravity="end"
                 android:layout_marginEnd="16dp"
                 android:src="@drawable/righticon"
-               />
+                />
         </com.google.android.material.appbar.MaterialToolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -44,7 +44,6 @@
             android:orientation="vertical"
             android:padding="20dp">
 
-            <!-- Volunteer Dashboard Header -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -233,7 +232,7 @@
                         android:background="@color/white"
 
                         android:alpha="0.2"
-                         />
+                        />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -304,7 +303,7 @@
                                     android:layout_width="20dp"
                                     android:layout_height="20dp"
                                     android:src="@drawable/alertred"
-                                   />
+                                    />
 
                                 <Space android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" />
 
@@ -370,7 +369,7 @@
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
                                 android:src="@drawable/tickb"
-                                 />
+                                />
 
                             <TextView
                                 android:id="@+id/resolved"

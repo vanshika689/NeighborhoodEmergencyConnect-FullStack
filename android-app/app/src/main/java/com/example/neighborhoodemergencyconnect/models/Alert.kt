@@ -12,5 +12,7 @@ data class Alert(
     val imageUrl : String,
     val createdBy : UserInfo,
     val createdAt : String,
-    val responders : List<UserInfo>
+    val responders : List<UserInfo>,
+    val resolvedBy :UserInfo? = null,
+    val aiAnalysis : AiAnalysis? = null
 )

@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#fcf9f8">
+    android:background="#F5F6FA">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="75dp"
+        android:layout_height="wrap_content"
         android:background="#ffffff"
-        app:elevation="0dp">
+        app:elevation="2dp">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/topAppBar"
@@ -17,12 +17,7 @@
             android:layout_height="?attr/actionBarSize"
             app:title="New Emergency Alert"
             app:titleCentered="true"
-            android:layout_marginTop="5dp"
-            app:titleTextColor="#b71c1c">
-
-
-
-        </com.google.android.material.appbar.MaterialToolbar>
+            app:titleTextColor="#C62828"/>
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -37,161 +32,12 @@
             android:padding="16dp">
 
             <com.google.android.material.card.MaterialCardView
-                android:layout_width="wrap_content"
-                android:layout_height="164dp"
-                app:cardBackgroundColor="#ffffff"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                app:strokeColor="#dcd9d9"
-                app:strokeWidth="1dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Category"
-                    android:textColor="#1c1b1b"
-                    android:textSize="18sp"
-                    android:layout_marginTop="9dp"
-                    android:layout_marginLeft="11dp"
-                    android:textStyle="bold" />
-
-
-
-                <HorizontalScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="33dp"
-                    android:scrollbars="none">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <LinearLayout
-                            android:id="@+id/layoutFire"
-                            android:layout_width="90dp"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:orientation="vertical">
-
-                            <com.google.android.material.imageview.ShapeableImageView
-                                android:layout_width="100dp"
-                                android:layout_height="100dp"
-                                android:background="@drawable/circle"
-                                android:padding="16dp"
-                                android:src="@drawable/fire" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:text="Fire"
-                                android:textColor="#494544" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:id="@+id/layoutAccident"
-                            android:layout_width="90dp"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:orientation="vertical">
-
-                            <com.google.android.material.imageview.ShapeableImageView
-                                android:layout_width="100dp"
-                                android:layout_height="100dp"
-                                android:background="@drawable/circle"
-                                android:padding="16dp"
-                                android:src="@drawable/acci" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:text="Accident"
-                                android:textColor="#494544" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:id="@+id/layoutDisaster"
-                            android:layout_width="90dp"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:orientation="vertical">
-
-                            <com.google.android.material.imageview.ShapeableImageView
-                                android:layout_width="100dp"
-                                android:layout_height="100dp"
-                                android:background="@drawable/circle"
-                                android:padding="16dp"
-                                android:src="@drawable/dis" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:text="Disaster"
-                                android:textColor="#494544" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:id="@+id/layoutCrime"
-                            android:layout_width="90dp"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:orientation="vertical">
-
-                            <com.google.android.material.imageview.ShapeableImageView
-                                android:layout_width="100dp"
-                                android:layout_height="100dp"
-                                android:background="@drawable/circle"
-                                android:padding="16dp"
-                                android:src="@drawable/crime" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:text="Crime"
-                                android:textColor="#494544" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:id="@+id/layoutOther"
-                            android:layout_width="90dp"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:orientation="vertical">
-
-                            <com.google.android.material.imageview.ShapeableImageView
-                                android:layout_width="100dp"
-                                android:layout_height="100dp"
-                                android:background="@drawable/circle"
-                                android:padding="16dp"
-                                android:src="@drawable/other" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:text="Other"
-                                android:textColor="#494544" />
-                        </LinearLayout>
-
-                    </LinearLayout>
-
-                </HorizontalScrollView>
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
                 app:cardBackgroundColor="#ffffff"
                 app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                app:strokeColor="#dcd9d9"
-                app:strokeWidth="1dp">
+                app:cardElevation="4dp"
+                app:strokeWidth="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -202,45 +48,199 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Details"
-                        android:textColor="#1c1b1b"
-                        android:textSize="18sp"
+                        android:fontFamily="@font/montserrat_bold"
+                        android:text="Category"
+                        android:textColor="#1A1A2E"
+                        android:textSize="16sp"
                         android:textStyle="bold" />
+
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:scrollbars="none">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:id="@+id/layoutFire"
+                                android:layout_width="80dp"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:orientation="vertical"
+                                android:layout_marginEnd="8dp">
+
+                                <com.google.android.material.imageview.ShapeableImageView
+                                    android:layout_width="60dp"
+                                    android:layout_height="60dp"
+                                    android:background="@drawable/circle"
+                                    android:padding="14dp"
+                                    android:src="@drawable/fire" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:fontFamily="@font/poppins_regular"
+                                    android:text="Fire"
+                                    android:textColor="#6B7280"
+                                    android:textSize="12sp"/>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/layoutAccident"
+                                android:layout_width="80dp"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:orientation="vertical"
+                                android:layout_marginEnd="8dp">
+
+                                <com.google.android.material.imageview.ShapeableImageView
+                                    android:layout_width="60dp"
+                                    android:layout_height="60dp"
+                                    android:background="@drawable/circle"
+                                    android:padding="14dp"
+                                    android:src="@drawable/acci" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:fontFamily="@font/poppins_regular"
+                                    android:text="Accident"
+                                    android:textColor="#6B7280"
+                                    android:textSize="12sp"/>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/layoutDisaster"
+                                android:layout_width="80dp"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:orientation="vertical"
+                                android:layout_marginEnd="8dp">
+
+                                <com.google.android.material.imageview.ShapeableImageView
+                                    android:layout_width="60dp"
+                                    android:layout_height="60dp"
+                                    android:background="@drawable/circle"
+                                    android:padding="14dp"
+                                    android:src="@drawable/dis" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:fontFamily="@font/poppins_regular"
+                                    android:text="Disaster"
+                                    android:textColor="#6B7280"
+                                    android:textSize="12sp"/>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/layoutCrime"
+                                android:layout_width="80dp"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:orientation="vertical"
+                                android:layout_marginEnd="8dp">
+
+                                <com.google.android.material.imageview.ShapeableImageView
+                                    android:layout_width="60dp"
+                                    android:layout_height="60dp"
+                                    android:background="@drawable/circle"
+                                    android:padding="14dp"
+                                    android:src="@drawable/crime" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:fontFamily="@font/poppins_regular"
+                                    android:text="Crime"
+                                    android:textColor="#6B7280"
+                                    android:textSize="12sp"/>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/layoutOther"
+                                android:layout_width="80dp"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:orientation="vertical">
+
+                                <com.google.android.material.imageview.ShapeableImageView
+                                    android:layout_width="60dp"
+                                    android:layout_height="60dp"
+                                    android:background="@drawable/circle"
+                                    android:padding="14dp"
+                                    android:src="@drawable/other" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:fontFamily="@font/poppins_regular"
+                                    android:text="Other"
+                                    android:textColor="#6B7280"
+                                    android:textSize="12sp"/>
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </HorizontalScrollView>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="#ffffff"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Title"
+                        android:fontFamily="@font/montserrat_bold"
+                        android:text="Details"
+                        android:textColor="#1A1A2E"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:visibility="gone"
-                        android:textStyle="bold"
-                        android:textSize="16sp"/>
+                        android:hint="Emergency Title"/>
 
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etTitle"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:visibility="gone"
-                            android:hint="Emergency Title"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-
-
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp">
+                        android:layout_marginTop="12dp"
+                        app:boxCornerRadiusTopStart="12dp"
+                        app:boxCornerRadiusTopEnd="12dp"
+                        app:boxCornerRadiusBottomStart="12dp"
+                        app:boxCornerRadiusBottomEnd="12dp"
+                        app:boxStrokeColor="#1565C0">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etDescription"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:fontFamily="@font/poppins_regular"
                             android:gravity="top"
                             android:hint="Description of the situation..."
                             android:lines="4" />
@@ -250,17 +250,23 @@
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
+                        android:layout_marginTop="12dp"
+                        app:boxCornerRadiusTopStart="12dp"
+                        app:boxCornerRadiusTopEnd="12dp"
+                        app:boxCornerRadiusBottomStart="12dp"
+                        app:boxCornerRadiusBottomEnd="12dp"
+                        app:boxStrokeColor="#1565C0"
                         app:startIconDrawable="@drawable/search">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etLocation"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Search or Select Location"
-                            android:focusable="false"
                             android:clickable="true"
-                            android:cursorVisible="false"/>
+                            android:cursorVisible="false"
+                            android:focusable="false"
+                            android:fontFamily="@font/poppins_regular"
+                            android:hint="Search or Select Location" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>
@@ -272,9 +278,8 @@
                 android:layout_marginTop="16dp"
                 app:cardBackgroundColor="#ffffff"
                 app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                app:strokeColor="#dcd9d9"
-                app:strokeWidth="1dp">
+                app:cardElevation="4dp"
+                app:strokeWidth="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -285,41 +290,36 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/montserrat_bold"
                         android:text="Attach Media"
-                        android:textColor="#1c1b1b"
-                        android:textSize="18sp"
+                        android:textColor="#1A1A2E"
+                        android:textSize="16sp"
                         android:textStyle="bold" />
 
                     <LinearLayout
                         android:id="@+id/btnUploadImage"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:background="#F5F5F5"
+                        android:layout_marginTop="12dp"
+                        android:background="#F5F6FA"
                         android:gravity="center"
                         android:orientation="vertical"
                         android:padding="24dp">
 
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                            <ImageView
-                                android:layout_width="44dp"
-                                android:layout_height="44dp"
-                                android:src="@drawable/gell" />
-
-                        </LinearLayout>
+                        <ImageView
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            android:src="@drawable/gell" />
 
                         <TextView
                             android:id="@+id/ImageText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
+                            android:fontFamily="@font/poppins_regular"
                             android:text="Pick From Gallery"
-                            android:textColor="#494544"
-                            android:textSize="14sp" />
+                            android:textColor="#6B7280"
+                            android:textSize="13sp" />
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -329,24 +329,25 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:layout_marginTop="24dp"
-                android:backgroundTint="#b71c1c"
-                android:text="Dispatch Alert"
+                android:backgroundTint="#C62828"
+                android:fontFamily="@font/montserrat_bold"
+                android:text="🚨 Dispatch Alert"
                 android:textAllCaps="false"
-                android:textSize="18sp"
-                android:textStyle="bold"
+                android:textSize="16sp"
                 app:cornerRadius="12dp" />
 
             <com.google.android.material.button.MaterialButton
                 style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:layout_width="match_parent"
                 android:id="@+id/Cancel"
+                android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="32dp"
+                android:fontFamily="@font/poppins_regular"
                 android:text="Cancel"
                 android:textAllCaps="false"
-                android:textColor="#494544"
-                android:textSize="16sp" />
+                android:textColor="#6B7280"
+                android:textSize="15sp" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
