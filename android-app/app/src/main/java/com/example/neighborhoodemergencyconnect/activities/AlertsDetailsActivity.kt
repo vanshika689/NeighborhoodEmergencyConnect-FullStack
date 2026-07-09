@@ -158,6 +158,7 @@ class AlertsDetailsActivity : AppCompatActivity() {
         binding.tvLocation.text = alert.shortAddress
         binding.tvCreatedBy.text = alert.createdBy.name
         binding.tvCreatorEmail.text = alert.createdBy.email
+        binding.tvCreatedAt.text = getRelativeTime(alert.createdAt)
         binding.tvFakeReason.text = alert.aiAnalysis?.fakeReason ?: "No analysis available"
         binding.tvConfidence.text = alert.aiAnalysis?.confidence ?: "N/A"
         binding.tvSeverityReason.text = alert.aiAnalysis?.severityReason ?: "N/A"

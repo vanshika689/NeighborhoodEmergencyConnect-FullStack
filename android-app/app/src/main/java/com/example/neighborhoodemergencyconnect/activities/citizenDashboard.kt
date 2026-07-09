@@ -29,6 +29,11 @@ class citizenDashboard : AppCompatActivity(){
             onBackPressedDispatcher.onBackPressed()
 
         }
+        binding.Safety.setOnClickListener {
+            val intent = Intent(this@citizenDashboard, Safety_tips::class.java)
+            startActivity(intent)
+
+        }
 
 
     }

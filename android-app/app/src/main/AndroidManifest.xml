@@ -19,6 +19,12 @@
         android:theme="@style/Theme.NeighborhoodEmergencyConnect"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".activities.SafetyDetailsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.Safety_tips"
+            android:exported="false" />
+        <activity
             android:name=".activities.ChangePasswordActivity"
             android:exported="false" />
         <activity
