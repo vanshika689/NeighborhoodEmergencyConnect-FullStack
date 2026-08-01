@@ -86,7 +86,6 @@ class AddAlert : AppCompatActivity() {
                         }
 
                     } catch (e: Exception) {
-
                         Toast.makeText(this@AddAlert, e.message, Toast.LENGTH_SHORT
                         ).show()
                     }

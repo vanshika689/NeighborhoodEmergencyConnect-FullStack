@@ -3,22 +3,20 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.lifecycleScope
 import com.example.neighborhoodemergencyconnect.api.NominatimRetrofit
 import com.example.neighborhoodemergencyconnect.databinding.ActivitySelectLocationBinding
 import kotlinx.coroutines.launch
 import org.osmdroid.config.Configuration
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
-import com.example.neighborhoodemergencyconnect.models.SearchLocationResponse
+import org.osmdroid.tileprovider.tilesource.OnlineTileSourceBase
+import org.osmdroid.util.MapTileIndex
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 
@@ -29,9 +27,24 @@ class SelectLocationActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySelectLocationBinding
     private var selectedGeoPoint: GeoPoint? = null
     private var selectedMarker: Marker? = null
-    private var myLocationMarker: Marker? = null
+
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private var searchResults = mutableListOf<SearchLocationResponse>()
+    private val thunderforestTileSource = object : OnlineTileSourceBase(
+        "Thunderforest",
+        0,
+        22,
+        256,
+        ".png",
+        arrayOf("https://tile.thunderforest.com/atlas/")
+    ) {
+        override fun getTileURLString(pMapTileIndex: Long): String {
+            return getBaseUrl() +
+                    MapTileIndex.getZoom(pMapTileIndex) + "/" +
+                    MapTileIndex.getX(pMapTileIndex) + "/" +
+                    MapTileIndex.getY(pMapTileIndex) +
+                    ".png?apikey=${com.example.neighborhoodemergencyconnect.BuildConfig.THUNDERFOREST_API_KEY}"
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +54,7 @@ class SelectLocationActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         Configuration.getInstance().userAgentValue = packageName
-        binding.mapView.setTileSource(TileSourceFactory.MAPNIK)
+        binding.mapView.setTileSource(thunderforestTileSource)
         binding.mapView.setMultiTouchControls(true) ///Enable PinchZoom, Two FingerZoom, MapDrag
         val mapEventsReceiver = object : MapEventsReceiver {
             override fun singleTapConfirmedHelper(p: GeoPoint?): Boolean {

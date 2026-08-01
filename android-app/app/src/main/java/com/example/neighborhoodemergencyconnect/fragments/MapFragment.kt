@@ -27,6 +27,8 @@ import android.content.Intent
 import androidx.core.content.ContextCompat
 import com.example.neighborhoodemergencyconnect.activities.AlertsDetailsActivity
 import com.example.neighborhoodemergencyconnect.models.Alert
+import org.osmdroid.tileprovider.tilesource.OnlineTileSourceBase
+import org.osmdroid.util.MapTileIndex
 
 class MapFragment : Fragment() {
     private var myLocationMarker: Marker? = null
@@ -44,6 +46,23 @@ class MapFragment : Fragment() {
         return binding.root
     }
 
+    private val thunderforestTileSource = object : OnlineTileSourceBase(
+        "Thunderforest",
+        0,
+        22,
+        256,
+        ".png",
+        arrayOf("https://tile.thunderforest.com/atlas/")
+    ) {
+        override fun getTileURLString(pMapTileIndex: Long): String {
+            return getBaseUrl() +
+                    MapTileIndex.getZoom(pMapTileIndex) + "/" +
+                    MapTileIndex.getX(pMapTileIndex) + "/" +
+                    MapTileIndex.getY(pMapTileIndex) +
+                    ".png?apikey=${com.example.neighborhoodemergencyconnect.BuildConfig.THUNDERFOREST_API_KEY}"
+        }
+    }
+
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?
@@ -53,9 +72,10 @@ class MapFragment : Fragment() {
             requireContext(),
             PreferenceManager.getDefaultSharedPreferences(requireContext())
         )
+        Configuration.getInstance().userAgentValue =
+            requireContext().packageName
 
-
-        binding.mapView.setTileSource(org.osmdroid.tileprovider.tilesource.TileSourceFactory.MAPNIK)
+        binding.mapView.setTileSource(thunderforestTileSource)
         binding.mapView.setMultiTouchControls(true)
         val mapController = binding.mapView.controller
         mapController.setZoom(19.0)
