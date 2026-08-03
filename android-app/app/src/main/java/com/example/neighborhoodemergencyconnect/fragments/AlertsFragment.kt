@@ -55,10 +55,8 @@ class AlertsFragment : Fragment() {
         }
         binding.rvAlerts.layoutManager = LinearLayoutManager(requireContext())
         binding.rvAlerts.adapter = adapter
-        // Inside your Fragment
-        viewLifecycleOwner.lifecycleScope.launch {
-            fetchAlerts()
-        }
+        fetchAlerts()
+
         binding.AddAlert.setOnClickListener {
             val intent = Intent(requireContext(), AddAlert::class.java)
             startActivity(intent)
@@ -139,11 +137,18 @@ class AlertsFragment : Fragment() {
                         .show()
                 }
             }
-            catch (e: Exception) {
-                Log.e("ALERT_DEBUG", "Exception type: ${e.javaClass.simpleName}")
-                Log.e("ALERT_DEBUG", "Exception message: ${e.message}")
-                Log.e("ALERT_DEBUG", "Cause: ${e.cause?.message}")
-                Toast.makeText(context, "${e.javaClass.simpleName}: ${e.message}", Toast.LENGTH_LONG).show()
+            catch (e: CancellationException) {
+                // Normal lifecycle cancellation.
+                throw e// Normal lifecycle cancellation.
+            } catch(e: Exception){
+                Log.e("ALERT_DEBUG", "Error", e)
+                if (!isAdded) return@launch
+
+                Toast.makeText(
+                    requireContext(),
+                    "Failed to load alerts",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }

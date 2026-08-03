@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
+import kotlin.coroutines.cancellation.CancellationException
 import com.example.neighborhoodemergencyconnect.activities.AboutActivity
 import com.example.neighborhoodemergencyconnect.activities.DashboardActivity
 import com.example.neighborhoodemergencyconnect.activities.LoginActivity
@@ -232,14 +233,15 @@ private fun sendVolunteerRequest() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
-        } catch (e: Exception) {
+        } catch (e: CancellationException) {
+            throw e
+        } catch(e:Exception){
             if (!isAdded || _binding == null) return@launch
             Toast.makeText(
                 requireContext(),
-                e.message,
+                "unable to load Profile",
                 Toast.LENGTH_SHORT
             ).show()
-            e.printStackTrace()
         }
     }
 }

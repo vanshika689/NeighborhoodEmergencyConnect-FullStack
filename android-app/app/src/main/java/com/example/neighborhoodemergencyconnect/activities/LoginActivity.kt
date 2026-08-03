@@ -23,7 +23,7 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.btnSignIn.setOnClickListener {
-           val email =  binding.etEmail.text.toString()
+            val email =  binding.etEmail.text.toString()
             val password = binding.etPassword.text.toString()
             if (email.isEmpty()) {
                 binding.etEmail.error = "Email is required"
@@ -49,7 +49,7 @@ class LoginActivity : AppCompatActivity() {
                     val response = RetrofitInstance.api.loginUser(request)
                     if(response.isSuccessful){
                         val loginResponse = response.body()
-                       val sharedPreferences = getSharedPreferences("NEC_APP", MODE_PRIVATE)
+                        val sharedPreferences = getSharedPreferences("NEC_APP", MODE_PRIVATE)
                         sharedPreferences.edit().putString("token", loginResponse?.token).putString("role", loginResponse?.role).apply()
 
                         val intent = Intent(this@LoginActivity, MainActivity::class.java)

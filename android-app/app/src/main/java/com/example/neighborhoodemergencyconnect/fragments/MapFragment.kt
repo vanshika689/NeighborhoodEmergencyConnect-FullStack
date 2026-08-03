@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import kotlin.coroutines.cancellation.CancellationException
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import com.example.neighborhoodemergencyconnect.api.RetrofitInstance
@@ -194,12 +195,13 @@ class MapFragment : Fragment() {
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-            } catch (e: Exception) {
+            } catch (e: CancellationException) {
+                throw e
+            }catch (e: Exception){
                 if (!isAdded || _binding==null) return@launch
-
                 Toast.makeText(
                     requireContext(),
-                    "Error loading alerts: ${e.message}",
+                    "Unable to load alerts",
                     Toast.LENGTH_SHORT
                 ).show()
             }

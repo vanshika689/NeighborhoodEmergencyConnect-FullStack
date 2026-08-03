@@ -195,10 +195,6 @@ class EditProfileActivity : AppCompatActivity() {
                                     response.body()?.imageUrl
                                 isUploadingImage = false
                                 binding.btnSaveChanges.text = "Save Changes"
-
-
-
-
                             } else {
                                 Toast.makeText(
                                     this@EditProfileActivity,

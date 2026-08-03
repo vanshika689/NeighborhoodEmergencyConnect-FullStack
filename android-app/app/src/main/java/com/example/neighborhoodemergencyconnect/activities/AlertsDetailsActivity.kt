@@ -22,6 +22,7 @@ import com.example.neighborhoodemergencyconnect.models.Alert
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
@@ -91,6 +92,14 @@ class AlertsDetailsActivity : AppCompatActivity() {
 
     private fun displayAlertDetails(alert: Alert) {
         val sharedPreferences = getSharedPreferences("NEC_APP", Context.MODE_PRIVATE)
+        val currentUserId = sharedPreferences.getString("userId",null)
+        val hasResponded = alert.responders.any{
+            it._id == currentUserId
+        }
+        if(hasResponded){
+            binding.btnRespond.text = "Alert Responded"
+            binding.btnRespond.isEnabled = false
+        }
         val userRole = sharedPreferences.getString("role", "citizen")
         if (userRole == "volunteer" || userRole == "admin") {
             binding.btnResolve.visibility = View.VISIBLE
@@ -121,11 +130,14 @@ class AlertsDetailsActivity : AppCompatActivity() {
         }
 
         binding.btnResolve.setOnClickListener {
-            if(binding.btnRespond.text!="Alert Responded"){
-                Toast.makeText(this,"Respond to alert first",Toast.LENGTH_SHORT).show()
+            if (!hasResponded) {
+                Toast.makeText(
+                    this,
+                    "Respond to alert first",
+                    Toast.LENGTH_SHORT
+                ).show()
                 return@setOnClickListener
             }
-
             MaterialAlertDialogBuilder(this)
                 .setTitle("Resolve Alert")
                 .setMessage("Are you at the alert location? Your GPS will be verified.")
@@ -267,10 +279,17 @@ class AlertsDetailsActivity : AppCompatActivity() {
                         binding.btnRespond.setText("Alert Responded")
                         fetchAlertDetails(alertId!!)
                     } else {
+                        val errorMessage = try {
+                            val errorBody = response.errorBody()?.string()
+                            JSONObject(errorBody ?: "").getString("message")
+                        } catch (e: Exception) {
+                            "Something went wrong"
+                        }
+
                         Toast.makeText(
                             this@AlertsDetailsActivity,
-                            "Code: ${response.code()}\n${response.errorBody()?.string()}",
-                            Toast.LENGTH_LONG
+                            errorMessage,
+                            Toast.LENGTH_SHORT
                         ).show()
 
                     }

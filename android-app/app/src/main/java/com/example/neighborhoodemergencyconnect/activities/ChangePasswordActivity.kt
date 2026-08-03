@@ -60,6 +60,8 @@ class ChangePasswordActivity : AppCompatActivity() {
     }
     private fun changePassword(oldPassword: String, newPassword: String) {
         lifecycleScope.launch {
+            binding.btnSavePassword.text = "Please wait..."
+            binding.btnSavePassword.isEnabled = false
             try {
                 val prefs = getSharedPreferences("NEC_APP", MODE_PRIVATE)
                 val token = prefs.getString("token", null)
@@ -67,7 +69,7 @@ class ChangePasswordActivity : AppCompatActivity() {
                     token!!,
                     ChangePasswordReq(oldPassword, newPassword)
                 )
-                binding.btnSavePassword.text = "Please wait..."
+
                 if (response.isSuccessful &&
                     response.body()?.success == true
                 ) {
@@ -81,12 +83,9 @@ class ChangePasswordActivity : AppCompatActivity() {
                     finish()
 
                 } else {
-                    Log.e("CHANGE_PASSWORD",
-                        "Code: ${response.code()}\nError: ${response.errorBody()?.string()}"
-                    )
                     Toast.makeText(
                         this@ChangePasswordActivity,
-                        response.body()?.message ?: "Password does not Match",
+                        "Old password is incorrect",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
@@ -96,6 +95,9 @@ class ChangePasswordActivity : AppCompatActivity() {
                     e.message,
                     Toast.LENGTH_SHORT
                 ).show()
+            } finally{
+                binding.btnSavePassword.text = "Save Changes"
+                binding.btnSavePassword.isEnabled = true
             }
         }
     }
