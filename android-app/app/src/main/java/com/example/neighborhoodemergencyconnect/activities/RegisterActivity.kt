@@ -54,11 +54,26 @@ class RegisterActivity : AppCompatActivity() {
 
             val request = RegisterRequest(name = name, email = email, password = password)
 
+            // Disable button while request in-flight
+            binding.btnSignUp.isEnabled = false
+
             lifecycleScope.launch {
                 try {
                     val response = RetrofitInstance.api.registerUser(request)
+
                     if (response.isSuccessful && response.body() != null) {
                         val body = response.body()!!
+
+                        // If server requires OTP, navigate to OTP verification screen
+                        if (body.requiresOTP == true || response.code() == 201) {
+                            Toast.makeText(this@RegisterActivity, "Registration initiated. Enter OTP sent to your email.", Toast.LENGTH_SHORT).show()
+                            val intent = Intent(this@RegisterActivity, OTPVerificationActivity::class.java)
+                            intent.putExtra("email", email)
+                            startActivity(intent)
+                            finish()
+                            return@launch
+                        }
+
                         val sharedPreferences = getSharedPreferences("NEC_APP", MODE_PRIVATE)
                         sharedPreferences.edit().apply {
                             putString("token", body.token)
@@ -66,8 +81,9 @@ class RegisterActivity : AppCompatActivity() {
                             putString("userId", body.userId)
                             apply()
                         }
+
                         Toast.makeText(this@RegisterActivity, "Registration Successful!", Toast.LENGTH_SHORT).show()
-                        // Navigate to Main Activity or Login Activity
+                        // Navigate to Main Activity
                         startActivity(Intent(this@RegisterActivity, MainActivity::class.java))
                         finish()
                     } else {
@@ -80,6 +96,8 @@ class RegisterActivity : AppCompatActivity() {
                     }
                 } catch (e: Exception) {
                     Toast.makeText(this@RegisterActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                } finally {
+                    binding.btnSignUp.isEnabled = true
                 }
             }
         }
