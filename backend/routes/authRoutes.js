@@ -5,12 +5,23 @@ const User = require("../models/User");
 const authMiddleware = require("../middleware/authMiddleware");
 const Alert = require("../models/Alert");
 const sendNotification = require("../utils/sendNotification");
+const { sendOTPEmail } = require("../utils/sendEmail");
+const { generateOTP, getOTPExpiry } = require("../utils/generateOTP");
+
 const router = express.Router();
 
+// Step 1: Initial Registration - Send OTP
 router.post("/register", async (req, res) => { 
 
     try {
         const { name, email, password } = req.body;
+
+        // Validate inputs
+        if (!name || !email || !password) {
+            return res.status(400).json({
+                message: "Name, email, and password are required"
+            });
+        }
 
         const existingUser = await User.findOne({ email });
 
@@ -20,28 +31,38 @@ router.post("/register", async (req, res) => {
             });
         }
 
+        // Generate OTP
+        const otp = generateOTP();
+        const otpExpiresAt = getOTPExpiry();
+
+        // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // Create user (not verified yet)
         const user = new User({
             name,
             email,
             password: hashedPassword,
+            otp,
+            otpExpiresAt,
+            isEmailVerified: false
         });
-        await user.save();
-        const token = jwt.sign(
-            { id: user._id ,
-            role: user.role,
-            },
-            process.env.JWT_SECRET,
-            { expiresIn: "300d" }
-        );
 
-        
+        await user.save();
+
+        // Send OTP email
+        const emailSent = await sendOTPEmail(email, otp);
+
+        if (!emailSent) {
+            return res.status(500).json({
+                message: "Failed to send OTP email"
+            });
+        }
 
         res.status(201).json({
-            message: "User registered successfully",
-            token,
-            role: user.role
+            message: "Registration initiated. OTP sent to your email.",
+            email: email,
+            requiresOTP: true
         });
 
     } catch(error){
@@ -54,6 +75,125 @@ router.post("/register", async (req, res) => {
 
 });
 
+// Step 2: Verify OTP
+router.post("/verify-otp", async (req, res) => {
+    try {
+        const { email, otp } = req.body;
+
+        if (!email || !otp) {
+            return res.status(400).json({
+                message: "Email and OTP are required"
+            });
+        }
+
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+
+        // Check if OTP expired
+        if (new Date() > user.otpExpiresAt) {
+            return res.status(400).json({
+                message: "OTP has expired. Please register again."
+            });
+        }
+
+        // Check if OTP matches
+        if (user.otp !== otp) {
+            return res.status(400).json({
+                message: "Invalid OTP"
+            });
+        }
+
+        // Mark email as verified
+        user.isEmailVerified = true;
+        user.otp = null;
+        user.otpExpiresAt = null;
+        await user.save();
+
+        // Generate JWT token
+        const token = jwt.sign(
+            { 
+                id: user._id,
+                role: user.role,
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: "300d" }
+        );
+
+        res.status(200).json({
+            message: "Email verified successfully",
+            token,
+            role: user.role,
+            userId: user._id
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: "Server Error"
+        });
+    }
+});
+
+// Step 3: Resend OTP
+router.post("/resend-otp", async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({
+                message: "Email is required"
+            });
+        }
+
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+
+        if (user.isEmailVerified) {
+            return res.status(400).json({
+                message: "Email already verified"
+            });
+        }
+
+        // Generate new OTP
+        const otp = generateOTP();
+        const otpExpiresAt = getOTPExpiry();
+
+        user.otp = otp;
+        user.otpExpiresAt = otpExpiresAt;
+        await user.save();
+
+        // Send OTP email
+        const emailSent = await sendOTPEmail(email, otp);
+
+        if (!emailSent) {
+            return res.status(500).json({
+                message: "Failed to send OTP email"
+            });
+        }
+
+        res.status(200).json({
+            message: "OTP resent successfully"
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: "Server Error"
+        });
+    }
+});
+
+// Login - Now requires verified email
 router.post("/login", async (req, res) => {
 
     try {
@@ -66,6 +206,13 @@ router.post("/login", async (req, res) => {
                 message: "User not found"
             });
         }
+
+        if (!user.isEmailVerified) {
+            return res.status(400).json({
+                message: "Please verify your email first"
+            });
+        }
+
         const isMatch = await bcrypt.compare(password, user.password);
 
         if(!isMatch){
@@ -329,9 +476,9 @@ router.patch("/reject-volunteer/:id", authMiddleware, async (req, res) => {
         await user.save();
        await sendNotification(
     user.fcmToken,
-   "Volunteer Request Update",
-    "Unfortunately, your volunteer request was rejected."
-    );
+    "Volunteer Request Update",
+     "Unfortunately, your volunteer request was rejected."
+     );
         res.status(200).json({
             message: "Volunteer request rejected successfully",
             user
