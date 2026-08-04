@@ -14,6 +14,12 @@ object RetrofitInstance {
 
     private val authInterceptor = Interceptor { chain ->
         val original = chain.request()
+
+        // If the request already has an Authorization header (explicit), don't overwrite it.
+        if (original.header("Authorization") != null) {
+            return@Interceptor chain.proceed(original)
+        }
+
         val builder = original.newBuilder()
         TokenManager.token?.let {
             builder.header("Authorization", it)

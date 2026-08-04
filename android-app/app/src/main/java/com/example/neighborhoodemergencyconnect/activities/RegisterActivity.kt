@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.neighborhoodemergencyconnect.api.RetrofitInstance
 import com.example.neighborhoodemergencyconnect.databinding.ActivityRegisterBinding
 import com.example.neighborhoodemergencyconnect.models.RegisterRequest
+import com.example.neighborhoodemergencyconnect.storage.TokenManager
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
@@ -74,13 +75,19 @@ class RegisterActivity : AppCompatActivity() {
                             return@launch
                         }
 
+                        // Normalize token format (store as Bearer <token>) so other screens expect the same
+                        val bearerToken = "Bearer ${body.token}"
                         val sharedPreferences = getSharedPreferences("NEC_APP", MODE_PRIVATE)
                         sharedPreferences.edit().apply {
-                            putString("token", body.token)
+                            putString("token", bearerToken)
                             putString("role", body.role)
                             putString("userId", body.userId)
+                            putBoolean("isLoggedIn", true)
                             apply()
                         }
+
+                        // Also set runtime token for interceptor usage
+                        TokenManager.token = bearerToken
 
                         Toast.makeText(this@RegisterActivity, "Registration Successful!", Toast.LENGTH_SHORT).show()
                         // Navigate to Main Activity
