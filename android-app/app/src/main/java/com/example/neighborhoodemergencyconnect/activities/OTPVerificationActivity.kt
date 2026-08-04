@@ -2,20 +2,24 @@ package com.example.neighborhoodemergencyconnect.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
 import com.example.neighborhoodemergencyconnect.api.RetrofitInstance
 import com.example.neighborhoodemergencyconnect.databinding.ActivityOtpVerificationBinding
 import com.example.neighborhoodemergencyconnect.models.OTPVerificationRequest
+import com.example.neighborhoodemergencyconnect.storage.TokenManager
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 class OTPVerificationActivity : AppCompatActivity() {
     private lateinit var binding: ActivityOtpVerificationBinding
     private var email: String = ""
-    private var resendCountdown: Int = 0
+    private var resendCountdownSeconds: Long = 0
+    private var countdownTimer: CountDownTimer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,7 +29,7 @@ class OTPVerificationActivity : AppCompatActivity() {
 
         // Get email from intent
         email = intent.getStringExtra("email") ?: ""
-        
+
         if (email.isEmpty()) {
             Toast.makeText(this, "Error: Email not found", Toast.LENGTH_SHORT).show()
             finish()
@@ -34,31 +38,28 @@ class OTPVerificationActivity : AppCompatActivity() {
 
         binding.tvEmail.text = "Verification code sent to\n$email"
 
+        // Real-time validation: enable verify only when OTP length is 6
+        binding.etOtp.doAfterTextChanged {
+            val otp = it?.toString()?.trim() ?: ""
+            binding.btnVerifyOtp.isEnabled = otp.length == 6
+        }
+        // Ensure initial enabled state
+        binding.btnVerifyOtp.isEnabled = false
+
         // Verify OTP Button
         binding.btnVerifyOtp.setOnClickListener {
             val otp = binding.etOtp.text.toString().trim()
-
-            if (otp.isEmpty()) {
-                binding.etOtp.error = "OTP is required"
-                return@setOnClickListener
-            }
-
-            if (otp.length != 6) {
-                binding.etOtp.error = "OTP must be 6 digits"
-                return@setOnClickListener
-            }
-
             verifyOTP(email, otp)
         }
 
         // Resend OTP Button
         binding.tvResendOtp.setOnClickListener {
-            if (resendCountdown <= 0) {
+            if (resendCountdownSeconds <= 0) {
                 resendOTP(email)
             } else {
                 Toast.makeText(
                     this,
-                    "Wait ${resendCountdown}s before resending",
+                    "Wait ${resendCountdownSeconds}s before resending",
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -67,6 +68,7 @@ class OTPVerificationActivity : AppCompatActivity() {
 
     private fun verifyOTP(email: String, otp: String) {
         binding.btnVerifyOtp.isEnabled = false
+        val originalText = binding.btnVerifyOtp.text
         binding.btnVerifyOtp.text = "Verifying..."
 
         lifecycleScope.launch {
@@ -76,16 +78,19 @@ class OTPVerificationActivity : AppCompatActivity() {
 
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()!!
-                    
-                    // Save JWT token, role, and userId
+
+                    // Save JWT token (prefix with Bearer) and other details
+                    val bearerToken = "Bearer ${body.token}"
                     val sharedPreferences = getSharedPreferences("NEC_APP", MODE_PRIVATE)
                     sharedPreferences.edit().apply {
-                        putString("token", body.token)
+                        putString("token", bearerToken)
                         putString("role", body.role)
                         putString("userId", body.userId)
                         putBoolean("isLoggedIn", true)
                         apply()
                     }
+                    // Also set TokenManager for interceptor usage
+                    TokenManager.token = bearerToken
 
                     Toast.makeText(
                         this@OTPVerificationActivity,
@@ -111,7 +116,7 @@ class OTPVerificationActivity : AppCompatActivity() {
                     .show()
             } finally {
                 binding.btnVerifyOtp.isEnabled = true
-                binding.btnVerifyOtp.text = "Verify OTP"
+                binding.btnVerifyOtp.text = originalText
             }
         }
     }
@@ -129,7 +134,7 @@ class OTPVerificationActivity : AppCompatActivity() {
                     ).show()
 
                     // Start countdown (60 seconds)
-                    startResendCountdown()
+                    startResendCountdown(60_000L)
                 } else {
                     val errorMessage = try {
                         JSONObject(response.errorBody()?.string() ?: "").getString("message")
@@ -146,25 +151,28 @@ class OTPVerificationActivity : AppCompatActivity() {
         }
     }
 
-    private fun startResendCountdown() {
-        resendCountdown = 60
+    private fun startResendCountdown(durationMs: Long) {
+        countdownTimer?.cancel()
+        resendCountdownSeconds = durationMs / 1000
         binding.tvResendOtp.isEnabled = false
-        binding.tvResendOtp.text = "Resend OTP (${resendCountdown}s)"
 
-        val timer = Thread {
-            while (resendCountdown > 0) {
-                Thread.sleep(1000)
-                resendCountdown--
-                runOnUiThread {
-                    if (resendCountdown > 0) {
-                        binding.tvResendOtp.text = "Resend OTP (${resendCountdown}s)"
-                    } else {
-                        binding.tvResendOtp.isEnabled = true
-                        binding.tvResendOtp.text = "Resend OTP"
-                    }
-                }
+        countdownTimer = object : CountDownTimer(durationMs, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                resendCountdownSeconds = millisUntilFinished / 1000
+                binding.tvResendOtp.text = "Resend OTP (${resendCountdownSeconds}s)"
+            }
+            
+            override fun onFinish() {
+                resendCountdownSeconds = 0
+                binding.tvResendOtp.isEnabled = true
+                binding.tvResendOtp.text = "Resend OTP"
             }
         }
-        timer.start()
+        countdownTimer?.start()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        countdownTimer?.cancel()
     }
 }
