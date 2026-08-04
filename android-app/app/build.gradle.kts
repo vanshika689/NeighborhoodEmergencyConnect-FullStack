@@ -17,6 +17,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        // default base URL (can be overridden per buildType)
+        buildConfigField("String", "BASE_URL", "\"https://cg-backend-2evk.onrender.com/\"")
     }
 
     buildTypes {
@@ -26,6 +28,10 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        debug {
+            // for local emulator use http://10.0.2.2:5000/ if running backend locally
+            buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:5000/\"")
         }
     }
     compileOptions {
