@@ -50,15 +50,17 @@ class LoginActivity : AppCompatActivity() {
                     if(response.isSuccessful){
                         val loginResponse = response.body()
                         val sharedPreferences = getSharedPreferences("NEC_APP", MODE_PRIVATE)
-                        sharedPreferences.edit().putString("token", loginResponse?.token).putString("role", loginResponse?.role).apply()
-
+                        sharedPreferences.edit()
+                            .putString("token", loginResponse?.token)
+                            .putString("role", loginResponse?.role)
+                            .putString("userId", loginResponse?.userId)
+                            .apply()
                         val intent = Intent(this@LoginActivity, MainActivity::class.java)
                         startActivity(intent)
                         finish()
                     }else{
                         Toast.makeText(this@LoginActivity, "Invalid Email or Password", Toast.LENGTH_SHORT).show()
                     }
-
                 } catch(e: Exception) {
                     Toast.makeText(this@LoginActivity, e.message, Toast.LENGTH_LONG).show()
                 }

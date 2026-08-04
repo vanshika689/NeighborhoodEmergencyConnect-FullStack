@@ -77,7 +77,7 @@ class MyAlert : AppCompatActivity() {
                     return@launch
                 }
 
-                val response = RetrofitInstance.api.myalerts(token)
+                val response = RetrofitInstance.api.getMyAlerts(token)
 
                 binding.progressBar.visibility = View.GONE
 

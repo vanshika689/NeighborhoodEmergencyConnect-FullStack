@@ -184,7 +184,7 @@ class AddAlert : AppCompatActivity() {
 
             lifecycleScope.launch {
                 try {
-                    val response = RetrofitInstance.api.AddAlert("$token",request)
+                    val response = RetrofitInstance.api.addAlert("$token",request)
                     if (response.isSuccessful) {
                         val alertResponse = response.body()
                         Toast.makeText(

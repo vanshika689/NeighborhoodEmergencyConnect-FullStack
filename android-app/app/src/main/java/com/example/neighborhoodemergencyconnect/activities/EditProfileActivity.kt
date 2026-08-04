@@ -115,7 +115,7 @@ class EditProfileActivity : AppCompatActivity() {
                 val prefs = getSharedPreferences("NEC_APP", MODE_PRIVATE)
                 val token = prefs.getString("token", null)
 
-                val response = RetrofitInstance.api.loadProfile(token!!)
+                val response = RetrofitInstance.api.getProfile(token!!)
                 if (response.isSuccessful) {
 
                     response.body()?.let {
