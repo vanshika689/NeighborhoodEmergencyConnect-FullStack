@@ -1,5 +1,6 @@
 package com.example.neighborhoodemergencyconnect.api
 
+import com.example.neighborhoodemergencyconnect.BuildConfig
 import com.example.neighborhoodemergencyconnect.storage.TokenManager
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -9,7 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 object RetrofitInstance {
 
     // Use BuildConfig for easier overrides in different buildTypes
-    private const val BASE_URL = "https://cg-backend-2evk.onrender.com/"
+    private val BASE_URL: String = BuildConfig.BASE_URL
 
     private val authInterceptor = Interceptor { chain ->
         val original = chain.request()
