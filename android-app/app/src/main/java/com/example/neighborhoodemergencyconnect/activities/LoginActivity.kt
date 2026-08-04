@@ -12,6 +12,7 @@ import com.example.neighborhoodemergencyconnect.databinding.ActivityLoginBinding
 import com.example.neighborhoodemergencyconnect.models.LoginRequest
 import android.util.Log
 import com.example.neighborhoodemergencyconnect.models.LoginResponse
+import com.example.neighborhoodemergencyconnect.storage.TokenManager
 import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
@@ -23,7 +24,7 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.btnSignIn.setOnClickListener {
-            val email =  binding.etEmail.text.toString()
+           val email =  binding.etEmail.text.toString()
             val password = binding.etPassword.text.toString()
             if (email.isEmpty()) {
                 binding.etEmail.error = "Email is required"
@@ -44,17 +45,21 @@ class LoginActivity : AppCompatActivity() {
                 password = password
             )
 
+            // disable button while request in-flight
+            binding.btnSignIn.isEnabled = false
+
             lifecycleScope.launch {
                 try {
                     val response = RetrofitInstance.api.loginUser(request)
                     if(response.isSuccessful){
                         val loginResponse = response.body()
                         val sharedPreferences = getSharedPreferences("NEC_APP", MODE_PRIVATE)
-                        sharedPreferences.edit()
-                            .putString("token", loginResponse?.token)
-                            .putString("role", loginResponse?.role)
-                            .putString("userId", loginResponse?.userId)
-                            .apply()
+                        val bearer = "Bearer ${loginResponse?.token}"
+                        sharedPreferences.edit().putString("token", bearer).putString("role", loginResponse?.role).apply()
+
+                        // set runtime token for interceptor
+                        TokenManager.token = bearer
+
                         val intent = Intent(this@LoginActivity, MainActivity::class.java)
                         startActivity(intent)
                         finish()
@@ -63,6 +68,8 @@ class LoginActivity : AppCompatActivity() {
                     }
                 } catch(e: Exception) {
                     Toast.makeText(this@LoginActivity, e.message, Toast.LENGTH_LONG).show()
+                } finally {
+                    binding.btnSignIn.isEnabled = true
                 }
             }
 
