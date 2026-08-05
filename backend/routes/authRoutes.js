@@ -11,10 +11,12 @@ const { generateOTP, getOTPExpiry } = require("../utils/generateOTP");
 const router = express.Router();
 
 // Step 1: Initial Registration - Send OTP
-router.post("/register", async (req, res) => { 
-
+router.post("/register", async (req, res) => {
     try {
         const { name, email, password } = req.body;
+
+        console.log("========== REGISTER REQUEST ==========");
+        console.log("Incoming Email:", email);
 
         // Validate inputs
         if (!name || !email || !password) {
@@ -23,9 +25,28 @@ router.post("/register", async (req, res) => {
             });
         }
 
+        // Print database information
+        console.log("Database:", User.db.name);
+        console.log("Collection:", User.collection.name);
+
+        // Print all users
+        const users = await User.find().select("email isEmailVerified");
+
+        console.log("----- USERS IN DATABASE -----");
+        users.forEach((u) => {
+            console.log(
+                `Email: ${u.email}, Verified: ${u.isEmailVerified}`
+            );
+        });
+        console.log("-----------------------------");
+
+        // Find existing user
         const existingUser = await User.findOne({ email });
 
-        if(existingUser){
+        console.log("Searching Email:", email);
+        console.log("Existing User:", existingUser);
+
+        if (existingUser) {
             return res.status(400).json({
                 message: "User already exists"
             });
@@ -38,7 +59,7 @@ router.post("/register", async (req, res) => {
         // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Create user (not verified yet)
+        // Create user
         const user = new User({
             name,
             email,
@@ -50,8 +71,12 @@ router.post("/register", async (req, res) => {
 
         await user.save();
 
-        // Send OTP email
+        console.log("User Saved Successfully:", user.email);
+
+        // Send OTP
         const emailSent = await sendOTPEmail(email, otp);
+
+        console.log("OTP Sent:", emailSent);
 
         if (!emailSent) {
             return res.status(500).json({
@@ -61,18 +86,18 @@ router.post("/register", async (req, res) => {
 
         res.status(201).json({
             message: "Registration initiated. OTP sent to your email.",
-            email: email,
+            email,
             requiresOTP: true
         });
 
-    } catch(error){
-        console.log(error);
+    } catch (error) {
+        console.error("REGISTER ERROR:", error);
 
         res.status(500).json({
-            message: "Server Error"
+            message: "Server Error",
+            error: error.message
         });
     }
-
 });
 
 // Step 2: Verify OTP
