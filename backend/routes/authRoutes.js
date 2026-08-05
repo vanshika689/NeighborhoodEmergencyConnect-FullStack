@@ -9,57 +9,68 @@ const { sendOTPEmail } = require("../utils/sendEmail");
 const { generateOTP, getOTPExpiry } = require("../utils/generateOTP");
 
 const router = express.Router();
-
 // Step 1: Initial Registration - Send OTP
 router.post("/register", async (req, res) => {
     try {
         const { name, email, password } = req.body;
 
-        console.log("========== REGISTER REQUEST ==========");
-        console.log("Incoming Email:", email);
-
-        // Validate inputs
+        // Validate input
         if (!name || !email || !password) {
             return res.status(400).json({
-                message: "Name, email, and password are required"
+                message: "Name, email and password are required"
             });
         }
 
-        // Print database information
-        console.log("Database:", User.db.name);
-        console.log("Collection:", User.collection.name);
-
-        // Print all users
-        const users = await User.find().select("email isEmailVerified");
-
-        console.log("----- USERS IN DATABASE -----");
-        users.forEach((u) => {
-            console.log(
-                `Email: ${u.email}, Verified: ${u.isEmailVerified}`
-            );
-        });
-        console.log("-----------------------------");
-
-        // Find existing user
-        const existingUser = await User.findOne({ email });
-
-        console.log("Searching Email:", email);
-        console.log("Existing User:", existingUser);
+        // Check if user already exists
+        let existingUser = await User.findOne({ email });
 
         if (existingUser) {
-            return res.status(400).json({
-                message: "User already exists"
+
+            // User is already verified
+            if (existingUser.isEmailVerified) {
+                return res.status(400).json({
+                    message: "User already exists"
+                });
+            }
+
+            // User exists but NOT verified
+            // Update details and send a fresh OTP
+
+            existingUser.name = name;
+            existingUser.password = await bcrypt.hash(password, 10);
+
+            existingUser.otp = generateOTP();
+            existingUser.otpExpiresAt = getOTPExpiry();
+
+            await existingUser.save();
+
+            const emailSent = await sendOTPEmail(
+                email,
+                existingUser.otp
+            );
+
+            if (!emailSent) {
+                return res.status(500).json({
+                    message: "Failed to send OTP email"
+                });
+            }
+
+            return res.status(200).json({
+                message: "OTP resent successfully.",
+                email,
+                requiresOTP: true
             });
         }
 
-        // Generate OTP
+        // -----------------------------
+        // New user registration
+        // -----------------------------
+
         const otp = generateOTP();
         const otpExpiresAt = getOTPExpiry();
 
-        // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Create user
         const user = new User({
             name,
             email,
@@ -71,12 +82,7 @@ router.post("/register", async (req, res) => {
 
         await user.save();
 
-        console.log("User Saved Successfully:", user.email);
-
-        // Send OTP
         const emailSent = await sendOTPEmail(email, otp);
-
-        console.log("OTP Sent:", emailSent);
 
         if (!emailSent) {
             return res.status(500).json({
@@ -91,15 +97,13 @@ router.post("/register", async (req, res) => {
         });
 
     } catch (error) {
-        console.error("REGISTER ERROR:", error);
+        console.log(error);
 
         res.status(500).json({
-            message: "Server Error",
-            error: error.message
+            message: "Server Error"
         });
     }
 });
-
 // Step 2: Verify OTP
 router.post("/verify-otp", async (req, res) => {
     try {
