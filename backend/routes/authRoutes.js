@@ -22,8 +22,6 @@ router.post("/register", async (req, res) => {
         let existingUser = await User.findOne({ email });
 
         if (existingUser) {
-
-            
             if (existingUser.isEmailVerified) {
                 return res.status(400).json({
                     message: "User already exists"
@@ -153,19 +151,16 @@ router.post("/resend-otp", async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        // Generate new OTP
         const otp = generateOTP();
         user.otp = otp;
         user.otpExpiresAt = getOTPExpiry();
         await user.save();
 
-        // ⚡ 1. Send fast response to the app immediately
         res.status(200).json({ 
             message: "OTP resent successfully", 
             email 
         });
 
-        // ✉️ 2. Send email in background without 'await'
         sendOTPEmail(email, otp).catch((err) => {
             console.error("RESEND OTP EMAIL ERROR:", err);
         });
