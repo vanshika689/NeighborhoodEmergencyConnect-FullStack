@@ -9,66 +9,50 @@ const { sendOTPEmail } = require("../utils/sendEmail");
 const { generateOTP, getOTPExpiry } = require("../utils/generateOTP");
 
 const router = express.Router();
-// Step 1: Initial Registration - Send OTP
 router.post("/register", async (req, res) => {
     try {
         const { name, email, password } = req.body;
 
-        // Validate input
         if (!name || !email || !password) {
             return res.status(400).json({
                 message: "Name, email and password are required"
             });
         }
 
-        // Check if user already exists
         let existingUser = await User.findOne({ email });
 
         if (existingUser) {
 
-            // User is already verified
+            
             if (existingUser.isEmailVerified) {
                 return res.status(400).json({
                     message: "User already exists"
                 });
             }
 
-            // User exists but NOT verified
-            // Update details and send a fresh OTP
-
             existingUser.name = name;
             existingUser.password = await bcrypt.hash(password, 10);
-
             existingUser.otp = generateOTP();
             existingUser.otpExpiresAt = getOTPExpiry();
 
             await existingUser.save();
 
-            const emailSent = await sendOTPEmail(
-                email,
-                existingUser.otp
-            );
-
-            if (!emailSent) {
-                return res.status(500).json({
-                    message: "Failed to send OTP email"
-                });
-            }
-
-            return res.status(200).json({
+            res.status(200).json({
                 message: "OTP resent successfully.",
                 email,
                 requiresOTP: true
             });
-        }
 
-        // -----------------------------
-        // New user registration
-        // -----------------------------
+        
+            sendOTPEmail(email, existingUser.otp).catch((err) => {
+                console.error("BACKGROUND EMAIL ERROR (Existing User):", err);
+            });
+
+            return;
+        }
 
         const otp = generateOTP();
         const otpExpiresAt = getOTPExpiry();
-
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const user = new User({
@@ -82,29 +66,25 @@ router.post("/register", async (req, res) => {
 
         await user.save();
 
-        const emailSent = await sendOTPEmail(email, otp);
-
-        if (!emailSent) {
-            return res.status(500).json({
-                message: "Failed to send OTP email"
-            });
-        }
-
         res.status(201).json({
             message: "Registration initiated. OTP sent to your email.",
             email,
             requiresOTP: true
         });
 
+        sendOTPEmail(email, otp).catch((err) => {
+            console.error("BACKGROUND EMAIL ERROR (New User):", err);
+        });
+
     } catch (error) {
-        console.log(error);
+        console.error("REGISTER ERROR:", error);
 
         res.status(500).json({
             message: "Server Error"
         });
     }
 });
-// Step 2: Verify OTP
+
 router.post("/verify-otp", async (req, res) => {
     try {
         const { email, otp } = req.body;
@@ -123,27 +103,23 @@ router.post("/verify-otp", async (req, res) => {
             });
         }
 
-        // Check if OTP expired
         if (new Date() > user.otpExpiresAt) {
             return res.status(400).json({
                 message: "OTP has expired. Please register again."
             });
         }
 
-        // Check if OTP matches
         if (user.otp !== otp) {
             return res.status(400).json({
                 message: "Invalid OTP"
             });
         }
 
-        // Mark email as verified
         user.isEmailVerified = true;
         user.otp = null;
         user.otpExpiresAt = null;
         await user.save();
 
-        // Generate JWT token
         const token = jwt.sign(
             { 
                 id: user._id,
@@ -168,7 +144,6 @@ router.post("/verify-otp", async (req, res) => {
     }
 });
 
-// Step 3: Resend OTP
 router.post("/resend-otp", async (req, res) => {
     try {
         const { email } = req.body;
@@ -193,7 +168,6 @@ router.post("/resend-otp", async (req, res) => {
             });
         }
 
-        // Generate new OTP
         const otp = generateOTP();
         const otpExpiresAt = getOTPExpiry();
 
@@ -201,7 +175,6 @@ router.post("/resend-otp", async (req, res) => {
         user.otpExpiresAt = otpExpiresAt;
         await user.save();
 
-        // Send OTP email
         const emailSent = await sendOTPEmail(email, otp);
 
         if (!emailSent) {
@@ -222,7 +195,6 @@ router.post("/resend-otp", async (req, res) => {
     }
 });
 
-// Login - Now requires verified email
 router.post("/login", async (req, res) => {
 
     try {
