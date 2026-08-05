@@ -11,7 +11,7 @@ const sendOTPEmail = async (email, otp) => {
     const data = await resend.emails.send({
       from: 'onboarding@resend.dev', // Default testing domain provided by Resend
       to: email,
-      subject: 'Email Verification - OTP',
+      subject: 'Neighborhood Connect <onboarding@resend.dev>',
       html: `
         <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
           <h2 style="color: #4CAF50;">Neighborhood Emergency Connect</h2>
