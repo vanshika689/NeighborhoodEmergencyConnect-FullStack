@@ -1,41 +1,51 @@
-const nodemailer = require('nodemailer');
+const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST || 'smtp.gmail.com', 
+  host: process.env.EMAIL_HOST || "smtp.gmail.com",
   port: Number(process.env.EMAIL_PORT) || 587,
   secure: false, 
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS, 
   },
+  tls: {
+    rejectUnauthorized: false, 
+  },
   connectionTimeout: 10000, 
-  greetingTimeout: 5000,
+  greetingTimeout: 10000,
   socketTimeout: 10000,
 });
+
 const sendOTPEmail = async (email, otp) => {
-    try {
+  try {
+    console.log("========== EMAIL DEBUG ==========");
+    console.log("Recipient Email:", email);
+    console.log("EMAIL_USER:", process.env.EMAIL_USER);
+    console.log("EMAIL_PASS exists:", !!process.env.EMAIL_PASS);
 
-        console.log("========== EMAIL DEBUG ==========");
-        console.log("EMAIL_USER:", process.env.EMAIL_USER);
-        console.log("EMAIL_PASSWORD exists:", !!process.env.EMAIL_PASSWORD);
+    const info = await transporter.sendMail({
+      from: `"Neighborhood Connect" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: "Your Verification Code (OTP)",
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
+          <h2 style="color: #4CAF50;">Neighborhood Emergency Connect</h2>
+          <p>Thank you for registering! Use the OTP below to verify your email address:</p>
+          <div style="background: #f4f4f4; padding: 15px; font-size: 24px; font-weight: bold; letter-spacing: 4px; text-align: center; border-radius: 5px; width: 200px; margin: 20px 0;">
+            ${otp}
+          </div>
+          <p>This code will expire shortly. Do not share this OTP with anyone.</p>
+        </div>
+      `,
+    });
 
-        await transporter.verify();
-        console.log("SMTP Verify Success");
+    console.log("OTP Email Sent Successfully! Message ID:", info.messageId);
+    return true;
 
-        await transporter.sendMail({
-            from: process.env.EMAIL_USER,
-            to: email,
-            subject: "Email Verification - OTP",
-            html: `<h2>Your OTP is ${otp}</h2>`
-        });
-
-        console.log("OTP email sent successfully");
-        return true;
-
-    } catch (error) {
-        console.error("EMAIL ERROR:", error);
-        return false;
-    }
+  } catch (error) {
+    console.error("EMAIL SENDING ERROR:", error);
+    return false;
+  }
 };
 
 module.exports = { sendOTPEmail };
