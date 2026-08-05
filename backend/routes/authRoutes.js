@@ -148,53 +148,33 @@ router.post("/resend-otp", async (req, res) => {
     try {
         const { email } = req.body;
 
-        if (!email) {
-            return res.status(400).json({
-                message: "Email is required"
-            });
-        }
-
         const user = await User.findOne({ email });
-
         if (!user) {
-            return res.status(404).json({
-                message: "User not found"
-            });
+            return res.status(404).json({ message: "User not found" });
         }
 
-        if (user.isEmailVerified) {
-            return res.status(400).json({
-                message: "Email already verified"
-            });
-        }
-
+        // Generate new OTP
         const otp = generateOTP();
-        const otpExpiresAt = getOTPExpiry();
-
         user.otp = otp;
-        user.otpExpiresAt = otpExpiresAt;
+        user.otpExpiresAt = getOTPExpiry();
         await user.save();
 
-        const emailSent = await sendOTPEmail(email, otp);
+        // ⚡ 1. Send fast response to the app immediately
+        res.status(200).json({ 
+            message: "OTP resent successfully", 
+            email 
+        });
 
-        if (!emailSent) {
-            return res.status(500).json({
-                message: "Failed to send OTP email"
-            });
-        }
-
-        res.status(200).json({
-            message: "OTP resent successfully"
+        // ✉️ 2. Send email in background without 'await'
+        sendOTPEmail(email, otp).catch((err) => {
+            console.error("RESEND OTP EMAIL ERROR:", err);
         });
 
     } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            message: "Server Error"
-        });
+        console.error("RESEND OTP ROUTE ERROR:", error);
+        res.status(500).json({ message: "Server error" });
     }
 });
-
 router.post("/login", async (req, res) => {
 
     try {

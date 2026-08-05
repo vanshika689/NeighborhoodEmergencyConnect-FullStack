@@ -3,7 +3,6 @@ const jwt = require("jsonwebtoken");
 const authMiddleware = (req, res, next) => {
 
     try {
-        // get token from headers
         const token = req.headers.authorization;
 
         if(!token){
@@ -11,7 +10,6 @@ const authMiddleware = (req, res, next) => {
                 message: "No token provided"
             });
         }
-        // verify token
     
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
      
@@ -26,7 +24,6 @@ const authMiddleware = (req, res, next) => {
         });
 
     }
-
 };
 
 module.exports = authMiddleware;
