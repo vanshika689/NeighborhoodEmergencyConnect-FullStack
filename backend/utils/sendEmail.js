@@ -1,39 +1,42 @@
-const { Resend } = require('resend');
+const Brevo = require('@getbrevo/brevo');
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Initialize Brevo API Instance
+const apiInstance = new Brevo.TransactionalEmailsApi();
+apiInstance.setApiKey(
+  Brevo.TransactionalEmailsApiApiKeys.apiKey,
+  process.env.BREVO_API_KEY
+);
 
 const sendOTPEmail = async (email, otp) => {
   try {
-    console.log("========== SENDING EMAIL VIA RESEND ==========");
+    console.log("========== SENDING EMAIL VIA BREVO ==========");
     console.log("Recipient Email:", email);
-    console.log("RESEND_API_KEY exists:", !!process.env.RESEND_API_KEY);
+    console.log("BREVO_API_KEY exists:", !!process.env.BREVO_API_KEY);
 
-    const { data, error } = await resend.emails.send({
-      from: 'Neighborhood Connect <onboarding@resend.dev>',
-      to: email, 
-      subject: 'Email Verification - OTP',
-      html: `
-        <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
-          <h2 style="color: #4CAF50;">Neighborhood Emergency Connect</h2>
-          <p>Your verification OTP is:</p>
-          <div style="background: #f4f4f4; padding: 15px; font-size: 26px; font-weight: bold; letter-spacing: 5px; text-align: center; width: 200px; border-radius: 5px;">
-            ${otp}
-          </div>
-          <p>This code is valid for 10 minutes. Do not share it with anyone.</p>
+    const sendSmtpEmail = new Brevo.SendSmtpEmail();
+    sendSmtpEmail.subject = "Your Verification Code (OTP)";
+    sendSmtpEmail.htmlContent = `
+      <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
+        <h2 style="color: #4CAF50;">Neighborhood Emergency Connect</h2>
+        <p>Your verification OTP is:</p>
+        <div style="background: #f4f4f4; padding: 15px; font-size: 26px; font-weight: bold; letter-spacing: 5px; text-align: center; width: 200px; border-radius: 5px;">
+          ${otp}
         </div>
-      `,
-    });
+        <p>This code is valid for 10 minutes. Do not share it with anyone.</p>
+      </div>
+    `;
+    sendSmtpEmail.sender = { 
+      name: "Neighborhood Connect", 
+      email: process.env.EMAIL_USER || "vanshikaupadhyay325@gmail.com" 
+    };
+    sendSmtpEmail.to = [{ email: email }];
 
-    if (error) {
-      console.error("❌ RESEND API REJECTED EMAIL:", error);
-      return false;
-    }
-
-    console.log("✅ SUCCESS! Resend Email ID:", data.id);
+    const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
+    console.log("✅ SUCCESS! Brevo Email Message ID:", data.messageId);
     return true;
 
-  } catch (err) {
-    console.error("❌ RESEND SDK EXCEPTION:", err);
+  } catch (error) {
+    console.error("❌ BREVO EMAIL ERROR:", error.response ? error.response.body : error);
     return false;
   }
 };
