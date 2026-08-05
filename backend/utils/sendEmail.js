@@ -1,7 +1,7 @@
 const Brevo = require('@getbrevo/brevo');
 
-// Initialize Brevo API Instance
 const apiInstance = new Brevo.TransactionalEmailsApi();
+
 apiInstance.setApiKey(
   Brevo.TransactionalEmailsApiApiKeys.apiKey,
   process.env.BREVO_API_KEY
@@ -32,7 +32,7 @@ const sendOTPEmail = async (email, otp) => {
     sendSmtpEmail.to = [{ email: email }];
 
     const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
-    console.log("✅ SUCCESS! Brevo Email Message ID:", data.messageId);
+    console.log("✅ SUCCESS! Brevo Message ID:", data.body ? data.body.messageId : data.messageId);
     return true;
 
   } catch (error) {
