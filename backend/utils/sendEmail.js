@@ -1,11 +1,4 @@
-const { TransactionalEmailsApi, SendSmtpEmail } = require('@getbrevo/brevo');
-
-const apiInstance = new TransactionalEmailsApi();
-
-apiInstance.setApiKey(
-  TransactionalEmailsApi.ApiKeys.apiKey,
-  process.env.BREVO_API_KEY
-);
+const brevo = require('@getbrevo/brevo');
 
 const sendOTPEmail = async (email, otp) => {
   try {
@@ -13,7 +6,14 @@ const sendOTPEmail = async (email, otp) => {
     console.log("Recipient Email:", email);
     console.log("BREVO_API_KEY exists:", !!process.env.BREVO_API_KEY);
 
-    const sendSmtpEmail = new SendSmtpEmail();
+    // Use the namespace pattern required by the current brevo package
+    let apiInstance = new brevo.TransactionalEmailsApi();
+    
+    // Set up authentication using the instance method
+    let apiKey = apiInstance.authentications['apiKey'];
+    apiKey.apiKey = process.env.BREVO_API_KEY;
+
+    let sendSmtpEmail = new brevo.SendSmtpEmail();
     sendSmtpEmail.subject = "Your Verification Code (OTP)";
     sendSmtpEmail.htmlContent = `
       <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
@@ -32,7 +32,7 @@ const sendOTPEmail = async (email, otp) => {
     sendSmtpEmail.to = [{ email: email }];
 
     const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
-    console.log("✅ SUCCESS! Brevo Message ID:", data.body ? data.body.messageId : data.messageId);
+    console.log("✅ SUCCESS! Brevo Response:", data);
     return true;
 
   } catch (error) {
