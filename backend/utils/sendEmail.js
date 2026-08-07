@@ -6,14 +6,21 @@ const sendOTPEmail = async (email, otp) => {
     console.log("Recipient Email:", email);
     console.log("BREVO_API_KEY exists:", !!process.env.BREVO_API_KEY);
 
-    // Use the namespace pattern required by the current brevo package
-    let apiInstance = new brevo.TransactionalEmailsApi();
+    // Safe fallback instantiation for Brevo SDK across versions
+    const ApiClass = brevo.TransactionalEmailsApi || brevo.default?.TransactionalEmailsApi;
+    const SmtpEmailClass = brevo.SendSmtpEmail || brevo.default?.SendSmtpEmail;
+
+    if (!ApiClass || !SmtpEmailClass) {
+      throw new Error("Brevo SDK classes could not be resolved from package import.");
+    }
+
+    let apiInstance = new ApiClass();
     
-    // Set up authentication using the instance method
+    // Set up authentication using the instance API key method
     let apiKey = apiInstance.authentications['apiKey'];
     apiKey.apiKey = process.env.BREVO_API_KEY;
 
-    let sendSmtpEmail = new brevo.SendSmtpEmail();
+    let sendSmtpEmail = new SmtpEmailClass();
     sendSmtpEmail.subject = "Your Verification Code (OTP)";
     sendSmtpEmail.htmlContent = `
       <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
@@ -36,7 +43,7 @@ const sendOTPEmail = async (email, otp) => {
     return true;
 
   } catch (error) {
-    console.error("❌ BREVO EMAIL ERROR:", error.response ? error.response.body : error);
+    console.error("❌ BREVO EMAIL ERROR:", error.response?.body || error.message || error);
     return false;
   }
 };
