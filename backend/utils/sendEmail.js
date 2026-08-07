@@ -1,9 +1,9 @@
-const Brevo = require('@getbrevo/brevo');
+const { TransactionalEmailsApi, SendSmtpEmail } = require('@getbrevo/brevo');
 
-const apiInstance = new Brevo.TransactionalEmailsApi();
+const apiInstance = new TransactionalEmailsApi();
 
 apiInstance.setApiKey(
-  Brevo.TransactionalEmailsApiApiKeys.apiKey,
+  TransactionalEmailsApi.ApiKeys.apiKey,
   process.env.BREVO_API_KEY
 );
 
@@ -13,7 +13,7 @@ const sendOTPEmail = async (email, otp) => {
     console.log("Recipient Email:", email);
     console.log("BREVO_API_KEY exists:", !!process.env.BREVO_API_KEY);
 
-    const sendSmtpEmail = new Brevo.SendSmtpEmail();
+    const sendSmtpEmail = new SendSmtpEmail();
     sendSmtpEmail.subject = "Your Verification Code (OTP)";
     sendSmtpEmail.htmlContent = `
       <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
