@@ -5,10 +5,9 @@ const User = require("../models/User");
 const authMiddleware = require("../middleware/authMiddleware");
 const Alert = require("../models/Alert");
 const sendNotification = require("../utils/sendNotification");
-const { sendOTPEmail } = require("../utils/sendEmail");
-const { generateOTP, getOTPExpiry } = require("../utils/generateOTP");
 
 const router = express.Router();
+
 router.post("/register", async (req, res) => {
     try {
         const { name, email, password } = req.body;
@@ -22,101 +21,59 @@ router.post("/register", async (req, res) => {
         let existingUser = await User.findOne({ email });
 
         if (existingUser) {
-            if (existingUser.isEmailVerified) {
-                return res.status(400).json({
-                    message: "User already exists"
-                });
-            }
-
-            existingUser.name = name;
-            existingUser.password = await bcrypt.hash(password, 10);
-            existingUser.otp = generateOTP();
-            existingUser.otpExpiresAt = getOTPExpiry();
-
-            await existingUser.save();
-
-            res.status(200).json({
-                message: "OTP resent successfully.",
-                email,
-                requiresOTP: true
+            return res.status(400).json({
+                message: "User already exists with this email"
             });
-
-        
-            sendOTPEmail(email, existingUser.otp).catch((err) => {
-                console.error("BACKGROUND EMAIL ERROR (Existing User):", err);
-            });
-
-            return;
         }
 
-        const otp = generateOTP();
-        const otpExpiresAt = getOTPExpiry();
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const user = new User({
             name,
             email,
             password: hashedPassword,
-            otp,
-            otpExpiresAt,
-            isEmailVerified: false
         });
 
         await user.save();
 
         res.status(201).json({
-            message: "Registration initiated. OTP sent to your email.",
+            message: "Register Successfully",
             email,
-            requiresOTP: true
-        });
-
-        sendOTPEmail(email, otp).catch((err) => {
-            console.error("BACKGROUND EMAIL ERROR (New User):", err);
         });
 
     } catch (error) {
         console.error("REGISTER ERROR:", error);
-
         res.status(500).json({
             message: "Server Error"
         });
     }
 });
 
-router.post("/verify-otp", async (req, res) => {
+router.post("/login", async (req, res) => {
     try {
-        const { email, otp } = req.body;
-
-        if (!email || !otp) {
+        const { email, password } = req.body;
+        
+        if (!email || !password) {
             return res.status(400).json({
-                message: "Email and OTP are required"
+                message: "Email and password are required"
             });
         }
 
         const user = await User.findOne({ email });
-
+        
         if (!user) {
-            return res.status(404).json({
+            return res.status(400).json({
                 message: "User not found"
             });
         }
 
-        if (new Date() > user.otpExpiresAt) {
+        const isMatch = await bcrypt.compare(password, user.password);
+
+        if (!isMatch) {
             return res.status(400).json({
-                message: "OTP has expired. Please register again."
+                message: "Invalid Credentials"
             });
         }
-
-        if (user.otp !== otp) {
-            return res.status(400).json({
-                message: "Invalid OTP"
-            });
-        }
-
-        user.isEmailVerified = true;
-        user.otp = null;
-        user.otpExpiresAt = null;
-        await user.save();
 
         const token = jwt.sign(
             { 
@@ -128,230 +85,157 @@ router.post("/verify-otp", async (req, res) => {
         );
 
         res.status(200).json({
-            message: "Email verified successfully",
-            token,
-            role: user.role,
-            userId: user._id
-        });
-
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            message: "Server Error"
-        });
-    }
-});
-
-router.post("/resend-otp", async (req, res) => {
-    try {
-        const { email } = req.body;
-
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        const otp = generateOTP();
-        user.otp = otp;
-        user.otpExpiresAt = getOTPExpiry();
-        await user.save();
-
-        res.status(200).json({ 
-            message: "OTP resent successfully", 
-            email 
-        });
-
-        sendOTPEmail(email, otp).catch((err) => {
-            console.error("RESEND OTP EMAIL ERROR:", err);
-        });
-
-    } catch (error) {
-        console.error("RESEND OTP ROUTE ERROR:", error);
-        res.status(500).json({ message: "Server error" });
-    }
-});
-router.post("/login", async (req, res) => {
-
-    try {
-        const { email, password } = req.body;
-        const user = await User.findOne({ email });
-        if(!user){
-            return res.status(400).json({
-                message: "User not found"
-            });
-        }
-
-        if (!user.isEmailVerified) {
-            return res.status(400).json({
-                message: "Please verify your email first"
-            });
-        }
-
-        const isMatch = await bcrypt.compare(password, user.password);
-
-        if(!isMatch){
-            return res.status(400).json({
-                message: "Invalid Credentials"
-            });
-        }
-
-        const token = jwt.sign(
-            { id: user._id ,
-            role: user.role,
-            },
-            process.env.JWT_SECRET,
-            { expiresIn: "300d" }
-        );
-
-        res.status(200).json({
             message: "Login Successful",
             token,
             role: user.role
         });
 
-    } catch(error){
-
-        console.log(error);
+    } catch (error) {
+        console.log("LOGIN ERROR:", error);
         res.status(500).json({
             message: "Server Error"
         });
-
     }
-
 });
 
-router.get("/profile",authMiddleware,async (req,res) => {
-    try{
-    const user = await User.findById(req.user.id).select("-password");
-    
-    if(!user){
-        return res.status(404).json({
-            message: "User not found"
+router.get("/profile", authMiddleware, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).select("-password");
+        
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+
+        res.status(200).json({
+            message: "Profile fetched Successfully",
+            user
         });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
-
-    res.status(200).json({
-        message: "Profile fetched Successfully",
-        user
-    });
-} catch(error){
-    res.status(500).json({message: error.message});
-}
 });
 
-router.put("/profile",authMiddleware,async(req,res)=>{
+router.put("/profile", authMiddleware, async (req, res) => {
     console.log("PROFILE UPDATE BODY:", req.body);
-    try{
-      
-        const { name, email, profileImage} = req.body;
+    try {
+        const { name, email, profileImage } = req.body;
         const user = await User.findById(req.user.id);
+        
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
         if (name) user.name = name;
         if (email) user.email = email;
         if (profileImage) user.profileImage = profileImage;
-        console.log("Before Save:", user);
+        
         await user.save();
-        console.log("After Save:", user);
 
         res.status(200).json({
             message: "Profile updated successfully",
-
         });
-    } catch(error){
-        res.status(500).json({message : error.message});
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 });
 
-router.put("/change-password",authMiddleware,async(req,res)=>{
-    try{
-        const { oldPassword, newPassword }= req.body;
+router.put("/change-password", authMiddleware, async (req, res) => {
+    try {
+        const { oldPassword, newPassword } = req.body;
         const user = await User.findById(req.user.id);
-         if (!user) {
+        
+        if (!user) {
             return res.status(404).json({
                 success: false,
                 message: "User not found"
             });
         }
-        const isMatch = await bcrypt.compare(oldPassword,user.password);
-        if(!isMatch){
+        
+        const isMatch = await bcrypt.compare(oldPassword, user.password);
+        if (!isMatch) {
             return res.status(400).json({
                 success: false,
                 message: "Old password is incorrect"
             });
         }
+        
         const salt = await bcrypt.genSalt(10);
-        user.password = await bcrypt.hash(
-            newPassword,
-            salt
-        );
+        user.password = await bcrypt.hash(newPassword, salt);
         await user.save();
+        
         res.status(200).json({
             success: true,
             message: "Password updated successfully"
         });
-    } catch(error){
+    } catch (error) {
         res.status(500).json({
             success: false,
             message: error.message
         });
-    };
+    }
 });
 
-router.patch("/request-volunteer", authMiddleware, async (req,res)=>{
-    try{
-        if(req.user.role==="volunteer"){
+router.patch("/request-volunteer", authMiddleware, async (req, res) => {
+    try {
+        if (req.user.role === "volunteer") {
             return res.status(403).json({
                 message: "You are already a Volunteer"
             });
         }
-        if(req.user.role==="admin"){
+        if (req.user.role === "admin") {
             return res.status(403).json({
-                message: "You are Admin, cant sent request"
-            })
+                message: "You are Admin, can't send request"
+            });
         }
+        
         const userID = req.user.id;
         const USER = await User.findById(userID);
-        if(!USER){
+        
+        if (!USER) {
             return res.status(404).json({
-                message:"User not found"
-            })
+                message: "User not found"
+            });
         }
-        if(USER.volunteerRequestStatus==="pending"){
+        if (USER.volunteerRequestStatus === "pending") {
             return res.status(403).json({
                 message: "Request is already sent"
-            })
+            });
         }
-        if(USER.volunteerRequestStatus==="none"){
-       USER.volunteerRequestStatus = "pending";
-        await USER.save();
-        res.status(200).json({
-            message: "Your Approval request is sent, please wait for response"
-        });
-    }
-    } catch(error){
+        
+        if (USER.volunteerRequestStatus === "none" || USER.volunteerRequestStatus === "rejected") {
+            USER.volunteerRequestStatus = "pending";
+            await USER.save();
+            return res.status(200).json({
+                message: "Your Approval request is sent, please wait for response"
+            });
+        }
+    } catch (error) {
         console.log(error);
         res.status(500).json({
-            message: "Server Occurred"
+            message: "Server Error Occurred"
         });
-    };
+    }
 });
 
-router.get("/volunteer-requests",authMiddleware,async (req,res)=>{
-    try{
-        if(req.user.role!=="admin"){
+router.get("/volunteer-requests", authMiddleware, async (req, res) => {
+    try {
+        if (req.user.role !== "admin") {
             return res.status(403).json({
                 message: "You are not authorized"
             });
         }
+        
         const requsers = await User.find({
-           volunteerRequestStatus: "pending"
-    }).select("_id name email role volunteerRequestStatus");
-    res.status(200).json({
-        message: "Volunteer requests fetched successfully",
-        requsers
-
-    });
-
-    }catch(error){
+            volunteerRequestStatus: "pending"
+        }).select("_id name email role volunteerRequestStatus");
+        
+        res.status(200).json({
+            message: "Volunteer requests fetched successfully",
+            requsers
+        });
+    } catch (error) {
         console.log(error);
         res.status(500).json({
             message: "Server Error"
@@ -359,12 +243,8 @@ router.get("/volunteer-requests",authMiddleware,async (req,res)=>{
     }
 });
 
-
 router.patch("/approve-volunteer/:id", authMiddleware, async (req, res) => {
-
     try {
-
-        // only admin can approve
         if (req.user.role !== "admin") {
             return res.status(403).json({
                 message: "You are not authorized"
@@ -372,7 +252,6 @@ router.patch("/approve-volunteer/:id", authMiddleware, async (req, res) => {
         }
 
         const userId = req.params.id;
-
         const user = await User.findById(userId);
 
         if (!user) {
@@ -381,46 +260,36 @@ router.patch("/approve-volunteer/:id", authMiddleware, async (req, res) => {
             });
         }
 
-        // request must be pending
         if (user.volunteerRequestStatus !== "pending") {
             return res.status(400).json({
                 message: "No pending volunteer request found"
             });
         }
 
-        // approve volunteer
         user.role = "volunteer";
         user.volunteerRequestStatus = "approved";
 
         await user.save();
         await sendNotification(
-    user.fcmToken,
-    "Volunteer Request Approved 🎉",
-    "Congratulations! Your volunteer request has been approved."
-);
+            user.fcmToken,
+            "Volunteer Request Approved 🎉",
+            "Congratulations! Your volunteer request has been approved."
+        );
 
         res.status(200).json({
             message: "Volunteer request approved successfully",
             user
         });
-
     } catch (error) {
-
         console.log(error);
-
         res.status(500).json({
             message: "Server error"
         });
-
     }
-
 });
 
 router.patch("/reject-volunteer/:id", authMiddleware, async (req, res) => {
-
     try {
-
-        // only admin can reject
         if (req.user.role !== "admin") {
             return res.status(403).json({
                 message: "You are not authorized"
@@ -428,7 +297,6 @@ router.patch("/reject-volunteer/:id", authMiddleware, async (req, res) => {
         }
 
         const userId = req.params.id;
-
         const user = await User.findById(userId);
 
         if (!user) {
@@ -437,37 +305,31 @@ router.patch("/reject-volunteer/:id", authMiddleware, async (req, res) => {
             });
         }
 
-        // request must be pending
         if (user.volunteerRequestStatus !== "pending") {
             return res.status(400).json({
                 message: "No pending volunteer request found"
             });
         }
 
-        // reject request
         user.volunteerRequestStatus = "rejected";
-
         await user.save();
-       await sendNotification(
-    user.fcmToken,
-    "Volunteer Request Update",
-     "Unfortunately, your volunteer request was rejected."
-     );
+        
+        await sendNotification(
+            user.fcmToken,
+            "Volunteer Request Update",
+            "Unfortunately, your volunteer request was rejected."
+        );
+
         res.status(200).json({
             message: "Volunteer request rejected successfully",
             user
         });
-
     } catch (error) {
-
         console.log(error);
-
         res.status(500).json({
             message: "Server error"
         });
-
     }
-
 });
 
 router.patch("/save-fcm-token", authMiddleware, async (req, res) => {
@@ -478,22 +340,16 @@ router.patch("/save-fcm-token", authMiddleware, async (req, res) => {
             req.user.id,
             { fcmToken: fcmToken }
         );
-        console.log(req.body);
 
         res.status(200).json({
             message: "FCM token saved"
         });
-
     } catch (error) {
-
         console.log(error);
-
         res.status(500).json({
             message: "Server Error"
         });
-
     }
 });
-
 
 module.exports = router;
