@@ -49,51 +49,52 @@ class AddAlert : AppCompatActivity() {
         }
     override fun onCreate(savedInstanceState: Bundle?) {
 
-        val imagePickerLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) {
-                uri ->           ///opens gallery
-            if(uri != null){
-                selectedImageUri = uri
-                lifecycleScope.launch {
+        val imagePickerLauncher =
+            registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->           ///opens gallery
+                if (uri != null) {
+                    selectedImageUri = uri
+                    lifecycleScope.launch {
 
-                    try {
-                        val inputStream = contentResolver.openInputStream(uri)
-                        val bytes = inputStream?.readBytes()
+                        try {
+                            val inputStream = contentResolver.openInputStream(uri)
+                            val bytes = inputStream?.readBytes()
 
-                        if (bytes != null) {
-                            val requestBody = bytes.toRequestBody(
-                                "image/*".toMediaTypeOrNull()
-                            )
+                            if (bytes != null) {
+                                val requestBody = bytes.toRequestBody(
+                                    "image/*".toMediaTypeOrNull()
+                                )
 
-                            val imagePart = MultipartBody.Part.createFormData(
-                                "image",
-                                "upload.jpg",
-                                requestBody
-                            )
+                                val imagePart = MultipartBody.Part.createFormData(
+                                    "image",
+                                    "upload.jpg",
+                                    requestBody
+                                )
 
-                            val response =
-                                RetrofitInstance.api.uploadImage(imagePart)
+                                val response =
+                                    RetrofitInstance.api.uploadImage(imagePart)
 
-                            if (response.isSuccessful) {
-                                uploadedImageUrl = response.body()?.imageUrl
-                                binding.ImageText.setText("Image Selected Successfully")
+                                if (response.isSuccessful) {
+                                    uploadedImageUrl = response.body()?.imageUrl
+                                    binding.ImageText.setText("Image Selected Successfully")
 
+                                } else {
 
-                            } else {
-
-                                Toast.makeText(this@AddAlert, "Upload failed", Toast.LENGTH_SHORT
-                                ).show()
+                                    Toast.makeText(
+                                        this@AddAlert, "Upload failed", Toast.LENGTH_SHORT
+                                    ).show()
+                                }
                             }
+
+                        } catch (e: Exception) {
+                            Toast.makeText(
+                                this@AddAlert, e.message, Toast.LENGTH_SHORT
+                            ).show()
                         }
-
-                    } catch (e: Exception) {
-                        Toast.makeText(this@AddAlert, e.message, Toast.LENGTH_SHORT
-                        ).show()
                     }
+
+
                 }
-
-
             }
-        }
         binding = ActivityAddAlertBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -133,7 +134,7 @@ class AddAlert : AppCompatActivity() {
         binding.Cancel.setOnClickListener {
             finish()
         }
-        binding .btnSubmitAlert.setOnClickListener {
+        binding.btnSubmitAlert.setOnClickListener {
             val title = binding.etTitle.text.toString().trim()
             val description = binding.etDescription.text.toString().trim()
             val location = binding.etLocation.text.toString().trim()
@@ -182,31 +183,64 @@ class AddAlert : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            setDispatchLoading(true)
+
             lifecycleScope.launch {
                 try {
-                    val response = RetrofitInstance.api.addAlert("$token",request)
+
+                    val response = RetrofitInstance.api.addAlert(
+                        "$token",
+                        request
+                    )
+
                     if (response.isSuccessful) {
+
                         val alertResponse = response.body()
+
                         Toast.makeText(
                             this@AddAlert,
                             alertResponse?.message ?: "Alert Created Successfully",
                             Toast.LENGTH_SHORT
                         ).show()
+
                         binding.etTitle.text?.clear()
                         binding.etDescription.text?.clear()
                         binding.etLocation.text?.clear()
-                        finish()
-                    } else {
-                        Toast.makeText(this@AddAlert, "Failed to create alert", Toast.LENGTH_SHORT).show()
 
+                        finish()
+
+                    } else {
+
+                        // Re-enable button if request fails
+                        setDispatchLoading(false)
+
+                        Toast.makeText(
+                            this@AddAlert,
+                            "Failed to create alert. Please try again.",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
-                } catch(e: Exception) {
-                    Toast.makeText(this@AddAlert, e.message, Toast.LENGTH_SHORT).show()
+
+                } catch (e: Exception) {
+                    setDispatchLoading(false)
+
+                    Toast.makeText(
+                        this@AddAlert,
+                        "Unable to dispatch alert. Please try again.",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
-
         }
+    }
+    private fun setDispatchLoading(isLoading: Boolean) {
+        binding.btnSubmitAlert.isEnabled = !isLoading
 
+        if (isLoading) {
+            binding.btnSubmitAlert.text = "⏳ Analyzing & Dispatching..."
+        } else {
+            binding.btnSubmitAlert.text = "🚨 Dispatch Alert"
+        }
     }
 
 

@@ -47,19 +47,48 @@ class LoginActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 try {
                     val response = RetrofitInstance.api.loginUser(request)
-                    if(response.isSuccessful){
+                    if (response.isSuccessful) {
+
                         val loginResponse = response.body()
-                        val sharedPreferences = getSharedPreferences("NEC_APP", MODE_PRIVATE)
+
+                        if (loginResponse?.token.isNullOrEmpty()) {
+                            Toast.makeText(
+                                this@LoginActivity,
+                                "Login successful but token was not received",
+                                Toast.LENGTH_LONG
+                            ).show()
+
+                            Log.e("LOGIN", "Token is null or empty")
+                            return@launch
+                        }
+
+                        val sharedPreferences =
+                            getSharedPreferences("NEC_APP", MODE_PRIVATE)
+
                         sharedPreferences.edit()
-                            .putString("token", loginResponse?.token)
-                            .putString("role", loginResponse?.role)
-                            .putString("userId", loginResponse?.userId)
+                            .putString("token", loginResponse.token)
+                            .putString("role", loginResponse.role)
+                            .putString("userId", loginResponse.userId)
                             .apply()
-                        val intent = Intent(this@LoginActivity, MainActivity::class.java)
+
+                        Log.d("LOGIN", "Token saved successfully")
+                        Log.d("LOGIN", "Role = ${loginResponse.role}")
+                        Log.d("LOGIN", "UserId = ${loginResponse.userId}")
+
+                        val intent = Intent(
+                            this@LoginActivity,
+                            MainActivity::class.java
+                        )
+
                         startActivity(intent)
                         finish()
-                    }else{
-                        Toast.makeText(this@LoginActivity, "Invalid Email or Password", Toast.LENGTH_SHORT).show()
+
+                    } else {
+                        Toast.makeText(
+                            this@LoginActivity,
+                            "Invalid Email or Password",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 } catch(e: Exception) {
                     Toast.makeText(this@LoginActivity, e.message, Toast.LENGTH_LONG).show()

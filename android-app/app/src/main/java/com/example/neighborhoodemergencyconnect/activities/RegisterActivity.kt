@@ -60,13 +60,19 @@ class RegisterActivity : AppCompatActivity() {
                 try {
                     val response = RetrofitInstance.api.registerUser(request)
                     val errorText = response.errorBody()?.string()
-
                     Log.d("REGISTER", "Code = ${response.code()}")
                     Log.d("REGISTER", "Body = ${response.body()}")
                     Log.d("REGISTER", "Error = $errorText")
                     if (response.isSuccessful && response.body() != null) {
-                        val intent = Intent(this@RegisterActivity, MainActivity::class.java)
+                        Toast.makeText(
+                            this@RegisterActivity,
+                            "Registration successful. Please login.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        val intent = Intent(this@RegisterActivity, LoginActivity::class.java)
                         startActivity(intent)
+                        finish()
                     } else {
                         val errorMessage = try {
                             JSONObject(errorText ?: "").getString("message")
