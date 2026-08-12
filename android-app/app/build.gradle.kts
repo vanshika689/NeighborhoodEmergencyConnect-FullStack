@@ -1,9 +1,20 @@
+import java.util.Properties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("kotlin-parcelize")
     id("com.google.gms.google-services")
 }
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+
+if (localPropertiesFile.exists()) {
+    localProperties.load(localPropertiesFile.inputStream())
+}
+
+val thunderforestApiKey =
+    localProperties.getProperty("THUNDERFOREST_API_KEY") ?: ""
 
 android {
     namespace = "com.example.neighborhoodemergencyconnect"
@@ -17,6 +28,12 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField(
+            "String",
+            "THUNDERFOREST_API_KEY",
+            "\"$thunderforestApiKey\""
+        )
     }
 
     buildTypes {
@@ -37,6 +54,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig=true
     }
 }
 

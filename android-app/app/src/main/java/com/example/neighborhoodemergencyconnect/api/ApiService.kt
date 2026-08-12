@@ -19,6 +19,12 @@ interface ApiService {
         @Body request: LoginRequest
     ): Response<LoginResponse>
 
+
+    @POST("api/auth/resend-otp")
+    suspend fun resendOtp(
+        @Body body: Map<String, String>
+    ): Response<MessageResponse>
+
     @GET("api/auth/profile")
     suspend fun getProfile(
         @Header("Authorization") token: String

@@ -104,6 +104,5 @@ class ChangePasswordActivity : AppCompatActivity() {
 
 
 
-        }
-
+}
 

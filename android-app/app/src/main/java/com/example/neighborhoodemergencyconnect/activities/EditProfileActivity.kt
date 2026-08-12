@@ -39,7 +39,7 @@ class EditProfileActivity : AppCompatActivity() {
             imagePickerLauncher.launch("image/*")
         }
 
-        }
+    }
     private fun updateProfile() {
         val name = binding.etFullName.text.toString().trim()
         val email = binding.etEmail.text.toString().trim()

@@ -19,6 +19,9 @@
         android:theme="@style/Theme.NeighborhoodEmergencyConnect"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".activities.OTPVerificationActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.SafetyDetailsActivity"
             android:exported="false" />
         <activity

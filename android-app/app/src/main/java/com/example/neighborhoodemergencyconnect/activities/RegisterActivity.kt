@@ -2,6 +2,7 @@ package com.example.neighborhoodemergencyconnect.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -53,27 +54,24 @@ class RegisterActivity : AppCompatActivity() {
             }
 
             val request = RegisterRequest(name = name, email = email, password = password)
+            android.util.Log.d("REGISTER", "Sending request...")
 
             lifecycleScope.launch {
                 try {
                     val response = RetrofitInstance.api.registerUser(request)
+                    val errorText = response.errorBody()?.string()
+
+                    Log.d("REGISTER", "Code = ${response.code()}")
+                    Log.d("REGISTER", "Body = ${response.body()}")
+                    Log.d("REGISTER", "Error = $errorText")
                     if (response.isSuccessful && response.body() != null) {
-                        val body = response.body()!!
-                        val sharedPreferences = getSharedPreferences("NEC_APP", MODE_PRIVATE)
-                        sharedPreferences.edit().apply {
-                            putString("token", body.token)
-                            putString("role", body.role)
-                            putString("userId", body.userId)
-                            apply()
-                        }
-                        Toast.makeText(this@RegisterActivity, "Registration Successful!", Toast.LENGTH_SHORT).show()
-                        // Navigate to Main Activity or Login Activity
-                        startActivity(Intent(this@RegisterActivity, MainActivity::class.java))
-                        finish()
+                        val intent = Intent(this@RegisterActivity, MainActivity::class.java)
+                        startActivity(intent)
                     } else {
                         val errorMessage = try {
-                            JSONObject(response.errorBody()?.string() ?: "").getString("message")
+                            JSONObject(errorText ?: "").getString("message")
                         } catch (e: Exception) {
+
                             "Registration failed"
                         }
                         Toast.makeText(this@RegisterActivity, errorMessage, Toast.LENGTH_SHORT).show()

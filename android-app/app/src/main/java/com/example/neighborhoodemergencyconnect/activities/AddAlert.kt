@@ -33,13 +33,13 @@ class AddAlert : AppCompatActivity() {
 
                 val data = result.data
 
-                 latitude =
+                latitude =
                     data?.getDoubleExtra("latitude", 0.0)
 
-                 longitude =
+                longitude =
                     data?.getDoubleExtra("longitude", 0.0)
 
-                 val Shortaddress = data?.getStringExtra("Shortaddress")
+                val Shortaddress = data?.getStringExtra("Shortaddress")
                 fullAddress = data?.getStringExtra("fullAddress")
 
                 binding.etLocation.setText(
@@ -49,7 +49,7 @@ class AddAlert : AppCompatActivity() {
         }
     override fun onCreate(savedInstanceState: Bundle?) {
 
-     val imagePickerLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) {
+        val imagePickerLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) {
                 uri ->           ///opens gallery
             if(uri != null){
                 selectedImageUri = uri
@@ -139,7 +139,7 @@ class AddAlert : AppCompatActivity() {
             val location = binding.etLocation.text.toString().trim()
 
             if (title.isEmpty()) {
-               Toast.makeText(this, "Please select Category", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please select Category", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             if (description.isEmpty()) {
