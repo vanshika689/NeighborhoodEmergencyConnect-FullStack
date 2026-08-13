@@ -59,9 +59,9 @@ router.post("/", authMiddleware, async (req, res) => {
 
         await alert.save();
         const populatedAlert = await Alert.findById(alert._id)
-            .populate("createdBy", "name email")
-            .populate("responders", "name email")
-            .populate("resolvedBy", "name email");
+            .populate("createdBy", "_id name email")
+            .populate("responders", "_id name email")
+            .populate("resolvedBy", "_id name email");
 
         const users = await User.find({
             _id: { $ne: req.user.id },
@@ -93,9 +93,9 @@ router.get("/", async (req, res) => {
     try {
         const alerts = await Alert.find()
             .sort({ createdAt: -1 })
-            .populate("createdBy", "name email")
-            .populate("responders", "name email")
-            .populate("resolvedBy", "name email");
+            .populate("createdBy", "_id name email")
+            .populate("responders", "_id name email")
+            .populate("resolvedBy", "_id name email");
 
         res.status(200).json({
             message: "Alerts fetched Successfully",

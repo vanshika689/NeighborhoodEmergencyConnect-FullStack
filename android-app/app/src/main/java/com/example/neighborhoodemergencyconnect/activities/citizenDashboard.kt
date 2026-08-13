@@ -34,6 +34,10 @@ class citizenDashboard : AppCompatActivity(){
             startActivity(intent)
 
         }
+        binding.card.setOnClickListener {
+            val intent = Intent(this@citizenDashboard, FeedbackActivity::class.java)
+            startActivity(intent)
+        }
 
 
     }

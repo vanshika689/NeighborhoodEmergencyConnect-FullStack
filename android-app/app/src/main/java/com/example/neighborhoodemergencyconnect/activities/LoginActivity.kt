@@ -69,6 +69,8 @@ class LoginActivity : AppCompatActivity() {
                             .putString("token", loginResponse.token)
                             .putString("role", loginResponse.role)
                             .putString("userId", loginResponse.userId)
+                            .putString("userName", loginResponse.name)   
+                            .putString("userEmail", loginResponse.email)
                             .apply()
 
                         Log.d("LOGIN", "Token saved successfully")

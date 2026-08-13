@@ -5,7 +5,6 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.format.DateUtils
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -37,6 +36,7 @@ class AlertsDetailsActivity : AppCompatActivity() {
     private val LOCATION_PERMISSION_REQUEST = 1001
     private var alertId: String? = null
     lateinit var binding: ActivityAlertsDetailsBinding
+    private var hasRespondedToCurrentAlert = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,13 +59,9 @@ class AlertsDetailsActivity : AppCompatActivity() {
         }
     }
 
-    private fun getFormattedAuthHeader(): String? {
+    private fun getToken(): String? {
         val sharedPreferences = getSharedPreferences("NEC_APP", Context.MODE_PRIVATE)
-        val rawToken = sharedPreferences.getString("token", null)
-
-        if (rawToken.isNullOrEmpty()) return null
-
-        return if (rawToken.startsWith("Bearer ")) rawToken else "Bearer $rawToken"
+        return sharedPreferences.getString("token", null)
     }
 
     private fun fetchAlertDetails(alertId: String) {
@@ -92,7 +88,15 @@ class AlertsDetailsActivity : AppCompatActivity() {
         val userId = sharedPreferences.getString("userId", "") ?: ""
 
         val isResolved = alert.status.equals("resolved", ignoreCase = true)
-        val hasResponded = alert.responders.any { it._id == userId }
+
+        // 1. Check if server lists user as responder
+        val isServerResponded = alert.responders.any { it._id == userId }
+
+        // 2. Fallback check: Local storage persistent flag for this specific alert ID
+        val localRespondedKey = "responded_$alertId"
+        val isLocallyResponded = sharedPreferences.getBoolean(localRespondedKey, false)
+
+        hasRespondedToCurrentAlert = isServerResponded || isLocallyResponded
 
         if (userRole == "volunteer" || userRole == "admin") {
             binding.btnRespond.visibility = View.VISIBLE
@@ -105,7 +109,7 @@ class AlertsDetailsActivity : AppCompatActivity() {
         if (isResolved) {
             binding.btnRespond.isEnabled = false
             binding.btnRespond.text = "Alert Resolved"
-        } else if (hasResponded) {
+        } else if (hasRespondedToCurrentAlert) {
             binding.btnRespond.text = "Responded Successfully"
             binding.btnRespond.isEnabled = false
         } else {
@@ -117,18 +121,25 @@ class AlertsDetailsActivity : AppCompatActivity() {
             binding.btnResolve.isEnabled = false
             binding.btnResolve.text = "Already Resolved"
         } else {
-            binding.btnResolve.isEnabled = hasResponded
+            binding.btnResolve.isEnabled = true
             binding.btnResolve.text = "Resolve"
 
             binding.btnResolve.setOnClickListener {
-                if (!hasResponded) {
-                    Toast.makeText(this, "Please respond to the alert first.", Toast.LENGTH_SHORT).show()
+                if (!hasRespondedToCurrentAlert) {
+                    Toast.makeText(
+                        this@AlertsDetailsActivity,
+                        "Please respond to the alert first.",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     return@setOnClickListener
                 }
-                MaterialAlertDialogBuilder(this)
+
+                MaterialAlertDialogBuilder(this@AlertsDetailsActivity)
                     .setTitle("Resolve Alert")
                     .setMessage("Are you at the alert location? Your GPS will be verified.")
-                    .setPositiveButton("Yes, Resolve") { _, _ -> checkLocationAndResolve() }
+                    .setPositiveButton("Yes, Resolve") { _, _ ->
+                        checkLocationAndResolve()
+                    }
                     .setNegativeButton("Cancel", null)
                     .show()
             }
@@ -220,28 +231,60 @@ class AlertsDetailsActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                val bearerToken = getFormattedAuthHeader()
+                val token = getToken()
 
-                if (bearerToken.isNullOrEmpty()) {
-                    Toast.makeText(this@AlertsDetailsActivity, "Session expired. Please log in again.", Toast.LENGTH_SHORT).show()
+                if (token.isNullOrEmpty()) {
+                    Toast.makeText(
+                        this@AlertsDetailsActivity,
+                        "Session expired. Please log in again.",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     return@launch
                 }
 
-                val response = RetrofitInstance.api.respondToAlert(bearerToken, currentAlertId)
+                val response = RetrofitInstance.api.respondToAlert(
+                    token,
+                    currentAlertId
+                )
 
                 if (response.isSuccessful) {
-                    Toast.makeText(this@AlertsDetailsActivity, "Alert responded successfully", Toast.LENGTH_SHORT).show()
+                    hasRespondedToCurrentAlert = true
+
+                    // Save permanently in local storage so exiting the page doesn't wipe it out
+                    val sharedPreferences = getSharedPreferences("NEC_APP", Context.MODE_PRIVATE)
+                    sharedPreferences.edit().putBoolean("responded_$currentAlertId", true).apply()
+
+                    binding.btnRespond.text = "Responded Successfully"
+                    binding.btnRespond.isEnabled = false
+
+                    Toast.makeText(
+                        this@AlertsDetailsActivity,
+                        "Alert responded successfully",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
                     fetchAlertDetails(currentAlertId)
                 } else {
+                    val errorBody = response.errorBody()?.string()
                     val errorMessage = try {
-                        JSONObject(response.errorBody()?.string() ?: "").getString("message")
+                        JSONObject(errorBody ?: "").getString("message")
                     } catch (e: Exception) {
                         "Something went wrong"
                     }
-                    Toast.makeText(this@AlertsDetailsActivity, errorMessage, Toast.LENGTH_SHORT).show()
+
+                    Toast.makeText(
+                        this@AlertsDetailsActivity,
+                        errorMessage,
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
+
             } catch (e: Exception) {
-                Toast.makeText(this@AlertsDetailsActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@AlertsDetailsActivity,
+                    "Error: ${e.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -269,7 +312,7 @@ class AlertsDetailsActivity : AppCompatActivity() {
         val currentAlertId = alertId ?: return
         lifecycleScope.launch {
             try {
-                val bearerToken = getFormattedAuthHeader()
+                val bearerToken = getToken()
 
                 if (bearerToken.isNullOrEmpty()) {
                     Toast.makeText(this@AlertsDetailsActivity, "Session expired. Please log in again.", Toast.LENGTH_SHORT).show()
@@ -284,7 +327,12 @@ class AlertsDetailsActivity : AppCompatActivity() {
                     fetchAlertDetails(currentAlertId)
                 } else {
                     val errorBody = response.errorBody()?.string()
-                    Toast.makeText(this@AlertsDetailsActivity, "Error: $errorBody", Toast.LENGTH_LONG).show()
+                    val errorMessage = try {
+                        JSONObject(errorBody ?: "").getString("message")
+                    } catch (e: Exception) {
+                        errorBody ?: "Error resolving alert"
+                    }
+                    Toast.makeText(this@AlertsDetailsActivity, errorMessage, Toast.LENGTH_LONG).show()
                 }
             } catch (e: Exception) {
                 Toast.makeText(this@AlertsDetailsActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()

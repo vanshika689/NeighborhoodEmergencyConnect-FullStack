@@ -30,7 +30,6 @@ class AddAlert : AppCompatActivity() {
         ) { result ->
 
             if (result.resultCode == RESULT_OK) {
-
                 val data = result.data
 
                 latitude =

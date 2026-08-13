@@ -4,5 +4,7 @@ data class LoginResponse(
     val message: String,
     val token: String,
     val role: String,
-    val userId : String
+    val userId : String,
+    val name : String,
+    val email: String
 )
