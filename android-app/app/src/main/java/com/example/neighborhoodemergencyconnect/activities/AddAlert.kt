@@ -1,4 +1,5 @@
 package com.example.neighborhoodemergencyconnect.activities
+
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -24,6 +25,7 @@ class AddAlert : AppCompatActivity() {
     var selectedImageUri: Uri? = null
     var uploadedImageUrl : String? = null
     private lateinit var binding: ActivityAddAlertBinding
+
     private val locationPickerLauncher =
         registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
@@ -46,7 +48,12 @@ class AddAlert : AppCompatActivity() {
                 )
             }
         }
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityAddAlertBinding.inflate(layoutInflater)
+        enableEdgeToEdge()
+        setContentView(binding.root)
 
         val imagePickerLauncher =
             registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->           ///opens gallery
@@ -77,7 +84,6 @@ class AddAlert : AppCompatActivity() {
                                     binding.ImageText.setText("Image Selected Successfully")
 
                                 } else {
-
                                     Toast.makeText(
                                         this@AddAlert, "Upload failed", Toast.LENGTH_SHORT
                                     ).show()
@@ -90,22 +96,18 @@ class AddAlert : AppCompatActivity() {
                             ).show()
                         }
                     }
-
-
                 }
             }
-        binding = ActivityAddAlertBinding.inflate(layoutInflater)
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(binding.root)
+
         binding.etLocation.setOnClickListener {
             val intent = Intent(this, SelectLocationActivity::class.java)
             locationPickerLauncher.launch(intent)
-
         }
+
         binding.btnUploadImage.setOnClickListener {
             imagePickerLauncher.launch("image/*")
         }
+
         binding.layoutFire.setOnClickListener {
             selectCategory(binding.layoutFire, "Fire")
             binding.etTitle.setText("Fire")
@@ -130,9 +132,11 @@ class AddAlert : AppCompatActivity() {
             selectCategory(binding.layoutOther, "Other")
             binding.etTitle.setText("Other")
         }
+
         binding.Cancel.setOnClickListener {
             finish()
         }
+
         binding.btnSubmitAlert.setOnClickListener {
             val title = binding.etTitle.text.toString().trim()
             val description = binding.etDescription.text.toString().trim()
@@ -164,7 +168,6 @@ class AddAlert : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-
             val request = AddAlertReq(
                 title = title,
                 description = description,
@@ -177,8 +180,8 @@ class AddAlert : AppCompatActivity() {
 
             val sharedPreferences = getSharedPreferences("NEC_APP", MODE_PRIVATE)
             val token = sharedPreferences.getString("token", null)
-            if (token == null) {
-                Toast.makeText(this, "Token not found", Toast.LENGTH_SHORT).show()
+            if (token.isNullOrEmpty()) {
+                Toast.makeText(this, "Token not found. Please log in again.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -186,14 +189,13 @@ class AddAlert : AppCompatActivity() {
 
             lifecycleScope.launch {
                 try {
-
+                    // ✅ FIXED: Added "Bearer " prefix here so authMiddleware accepts it!
                     val response = RetrofitInstance.api.addAlert(
-                        "$token",
+                        "Bearer $token",
                         request
                     )
 
                     if (response.isSuccessful) {
-
                         val alertResponse = response.body()
 
                         Toast.makeText(
@@ -209,10 +211,7 @@ class AddAlert : AppCompatActivity() {
                         finish()
 
                     } else {
-
-                        // Re-enable button if request fails
                         setDispatchLoading(false)
-
                         Toast.makeText(
                             this@AddAlert,
                             "Failed to create alert. Please try again.",
@@ -222,7 +221,6 @@ class AddAlert : AppCompatActivity() {
 
                 } catch (e: Exception) {
                     setDispatchLoading(false)
-
                     Toast.makeText(
                         this@AddAlert,
                         "Unable to dispatch alert. Please try again.",
@@ -232,6 +230,7 @@ class AddAlert : AppCompatActivity() {
             }
         }
     }
+
     private fun setDispatchLoading(isLoading: Boolean) {
         binding.btnSubmitAlert.isEnabled = !isLoading
 
@@ -242,7 +241,6 @@ class AddAlert : AppCompatActivity() {
         }
     }
 
-
     fun resetSelection() {
         binding.layoutFire.setBackgroundResource(R.drawable.category_normal)
         binding.layoutAccident.setBackgroundResource(R.drawable.category_normal)
@@ -250,16 +248,15 @@ class AddAlert : AppCompatActivity() {
         binding.layoutCrime.setBackgroundResource(R.drawable.category_normal)
         binding.layoutOther.setBackgroundResource(R.drawable.category_normal)
     }
+
     private fun selectCategory(
         view: LinearLayout,
         category: String
     ) {
-
         resetSelection()
         view.setBackgroundResource(
             R.drawable.titleselected
         )
-
         binding.etTitle.setText(category)
     }
 }

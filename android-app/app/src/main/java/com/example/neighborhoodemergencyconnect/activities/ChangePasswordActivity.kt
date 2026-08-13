@@ -16,11 +16,13 @@ import kotlinx.coroutines.launch
 
 class ChangePasswordActivity : AppCompatActivity() {
     private lateinit var binding: ActivityChangePasswordBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        binding = ActivityChangePasswordBinding.inflate(layoutInflater)
-        setContentView(binding.root)
         super.onCreate(savedInstanceState)
+        binding = ActivityChangePasswordBinding.inflate(layoutInflater)
         enableEdgeToEdge()
+        setContentView(binding.root)
+
         binding.btnSavePassword.setOnClickListener {
             val oldPassword = binding.etOldPassword.text.toString()
             val newPassword = binding.etNewPassword.text.toString()
@@ -39,10 +41,8 @@ class ChangePasswordActivity : AppCompatActivity() {
                     binding.tilConfirmPassword.error = "Please enter your confirm password"
                 }
 
-
                 newPassword.length < 6 -> {
                     binding.etNewPassword.error = "Password must be at least 6 characters long"
-
                 }
 
                 newPassword == oldPassword -> {
@@ -52,12 +52,14 @@ class ChangePasswordActivity : AppCompatActivity() {
                 confirmPassword != newPassword -> {
                     binding.etConfirmPassword.error = "Passwords do not match"
                 }
+
                 else -> {
                     changePassword(oldPassword, newPassword)
                 }
             }
         }
     }
+
     private fun changePassword(oldPassword: String, newPassword: String) {
         lifecycleScope.launch {
             binding.btnSavePassword.text = "Please wait..."
@@ -65,14 +67,18 @@ class ChangePasswordActivity : AppCompatActivity() {
             try {
                 val prefs = getSharedPreferences("NEC_APP", MODE_PRIVATE)
                 val token = prefs.getString("token", null)
+
+                if (token.isNullOrEmpty()) {
+                    Toast.makeText(this@ChangePasswordActivity, "Session expired. Please log in again.", Toast.LENGTH_SHORT).show()
+                    return@launch
+                }
+
                 val response = RetrofitInstance.api.changePassword(
-                    token!!,
+                    "Bearer $token",
                     ChangePasswordReq(oldPassword, newPassword)
                 )
 
-                if (response.isSuccessful &&
-                    response.body()?.success == true
-                ) {
+                if (response.isSuccessful && response.body()?.success == true) {
                     binding.btnSavePassword.text = "Save Changes"
                     Toast.makeText(
                         this@ChangePasswordActivity,
@@ -81,7 +87,6 @@ class ChangePasswordActivity : AppCompatActivity() {
                     ).show()
 
                     finish()
-
                 } else {
                     Toast.makeText(
                         this@ChangePasswordActivity,
@@ -95,14 +100,10 @@ class ChangePasswordActivity : AppCompatActivity() {
                     e.message,
                     Toast.LENGTH_SHORT
                 ).show()
-            } finally{
+            } finally {
                 binding.btnSavePassword.text = "Save Changes"
                 binding.btnSavePassword.isEnabled = true
             }
         }
     }
-
-
-
 }
-

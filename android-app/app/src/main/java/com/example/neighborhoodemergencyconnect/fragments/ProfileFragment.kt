@@ -124,11 +124,19 @@ class ProfileFragment : Fragment() {
                     requireContext().getSharedPreferences("NEC_APP", Context.MODE_PRIVATE)
 
                 val token = sharedPreferences.getString("token", null)
-                val response = RetrofitInstance.api.getProfile("$token")
+                val response = RetrofitInstance.api.getProfile("Bearer $token")
 
                 if (response.isSuccessful) {
                     val user = response.body()?.user
-                    sharedPreferences.edit().putString("role",user?.role).apply()
+
+                    if (user != null) {
+                        sharedPreferences.edit()
+                            .putString("role", user.role)
+                            .putString("userName", user.name)
+                            .putString("userEmail", user.email)
+                            .apply()
+                    }
+
                     if (_binding == null || !isAdded) return@launch
                     if (user != null) {
                         updateUI(user)
@@ -145,9 +153,7 @@ class ProfileFragment : Fragment() {
                 ).show()
                 e.printStackTrace()
             }
-
         }
-
     }
 
     override fun onDestroyView() {

@@ -1,4 +1,5 @@
 package com.example.neighborhoodemergencyconnect.activities
+
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
@@ -61,7 +62,8 @@ class AlertsDetailsActivity : AppCompatActivity() {
 
     private fun getToken(): String? {
         val sharedPreferences = getSharedPreferences("NEC_APP", Context.MODE_PRIVATE)
-        return sharedPreferences.getString("token", null)
+        val token = sharedPreferences.getString("token", null)
+        return if (!token.isNullOrEmpty()) "Bearer $token" else null
     }
 
     private fun fetchAlertDetails(alertId: String) {
@@ -89,10 +91,8 @@ class AlertsDetailsActivity : AppCompatActivity() {
 
         val isResolved = alert.status.equals("resolved", ignoreCase = true)
 
-        // 1. Check if server lists user as responder
         val isServerResponded = alert.responders.any { it._id == userId }
 
-        // 2. Fallback check: Local storage persistent flag for this specific alert ID
         val localRespondedKey = "responded_$alertId"
         val isLocallyResponded = sharedPreferences.getBoolean(localRespondedKey, false)
 
@@ -250,7 +250,6 @@ class AlertsDetailsActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     hasRespondedToCurrentAlert = true
 
-                    // Save permanently in local storage so exiting the page doesn't wipe it out
                     val sharedPreferences = getSharedPreferences("NEC_APP", Context.MODE_PRIVATE)
                     sharedPreferences.edit().putBoolean("responded_$currentAlertId", true).apply()
 

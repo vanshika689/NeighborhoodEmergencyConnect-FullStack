@@ -294,14 +294,14 @@
                         <ImageView
                             android:layout_width="28dp"
                             android:layout_height="28dp"
-                            android:src="@drawable/saf" />
+                            android:src="@drawable/Feedback_icon" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:fontFamily="@font/poppins_semibold"
-                            android:text="Verify Zone"
+                            android:text="Feedback"
                             android:textColor="#1A1A2E"
                             android:textSize="13sp" />
                     </LinearLayout>

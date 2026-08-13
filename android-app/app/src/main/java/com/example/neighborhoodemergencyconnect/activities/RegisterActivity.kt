@@ -54,7 +54,7 @@ class RegisterActivity : AppCompatActivity() {
             }
 
             val request = RegisterRequest(name = name, email = email, password = password)
-            android.util.Log.d("REGISTER", "Sending request...")
+            Log.d("REGISTER", "Sending request...")
 
             lifecycleScope.launch {
                 try {
@@ -77,7 +77,6 @@ class RegisterActivity : AppCompatActivity() {
                         val errorMessage = try {
                             JSONObject(errorText ?: "").getString("message")
                         } catch (e: Exception) {
-
                             "Registration failed"
                         }
                         Toast.makeText(this@RegisterActivity, errorMessage, Toast.LENGTH_SHORT).show()

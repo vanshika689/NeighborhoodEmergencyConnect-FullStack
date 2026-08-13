@@ -46,7 +46,7 @@ class citizenDashboard : AppCompatActivity(){
         lifecycleScope.launch {
             try {
                 val token = getSharedPreferences("NEC_APP", MODE_PRIVATE).getString("token", null)
-                val response = RetrofitInstance.api.getDashboard("$token")
+                val response = RetrofitInstance.api.getDashboard("Bearer $token")
                 if (response.isSuccessful) {
                     val dashboardData = response.body()
                     binding.tvTotalAlerts.text = dashboardData?. totalalertsbyme.toString()

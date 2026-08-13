@@ -37,13 +37,14 @@ class FeedbackActivity : AppCompatActivity() {
             val userName = sharedPreferences.getString("userName", "Citizen") ?: "Citizen"
             val userEmail = sharedPreferences.getString("userEmail", "unknown@gmail.com") ?: "unknown@gmail.com"
 
-            // Construct the email intent
-            val recipientEmail = "your-email@gmail.com" // 👈 Replace with your actual email address
-            val subject = "CivicGuard App Feedback from $userName"
+
             val body = "Name: $userName\nEmail: $userEmail\n\nFeedback:\n$feedbackText"
+            val recipientEmail = "vanshikaup2705@gmail.com"
+            val subject = "CivicGuard App Feedback from $userName"
+
 
             val intent = Intent(Intent.ACTION_SENDTO).apply {
-                data = Uri.parse("mailto:") // Only email apps should handle this
+                data = Uri.parse("mailto:")
                 putExtra(Intent.EXTRA_EMAIL, arrayOf(recipientEmail))
                 putExtra(Intent.EXTRA_SUBJECT, subject)
                 putExtra(Intent.EXTRA_TEXT, body)
