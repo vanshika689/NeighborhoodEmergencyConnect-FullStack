@@ -34,7 +34,7 @@ class DashboardActivity : AppCompatActivity() {
                     "NEC_APP",
                     MODE_PRIVATE
                 ).getString("token", null)
-                val response = RetrofitInstance.api.getDashboard("Bearer $token")
+                val response = RetrofitInstance.api.getDashboard("$token")
                 if (response.isSuccessful) {
                     val dashboardData = response.body()
                     binding.tvTotalUsers.text = dashboardData?.totalusers.toString()

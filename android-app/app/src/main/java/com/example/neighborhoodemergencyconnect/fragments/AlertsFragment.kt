@@ -115,7 +115,7 @@ class AlertsFragment : Fragment() {
     }
 
     private fun fetchAlerts() {
-        viewLifecycleOwner.lifecycleScope.launch {
+       viewLifecycleOwner.lifecycleScope.launch {
             try {
                 val response = RetrofitInstance.api.getAlerts()
                 if (response.isSuccessful) {
@@ -155,20 +155,20 @@ class AlertsFragment : Fragment() {
 
 
     private fun applyFilters() {
-        val filteredAlerts = alertsList.filter { alert ->
-            val statusMatch =
-                selectedStatus == "All" ||
-                        alert.status.equals(selectedStatus, true)
+            val filteredAlerts = alertsList.filter { alert ->
+                val statusMatch =
+                    selectedStatus == "All" ||
+                            alert.status.equals(selectedStatus, true)
 
-            val categoryMatch =
-                selectedCategory == "All" ||
-                        alert.title.equals(selectedCategory, true)
+                val categoryMatch =
+                    selectedCategory == "All" ||
+                            alert.title.equals(selectedCategory, true)
 
-            statusMatch && categoryMatch
-        }
+                statusMatch && categoryMatch
+            }
 
         displayList.clear()
         displayList.addAll(filteredAlerts)
         adapter.notifyDataSetChanged()
-    }
+        }
 }

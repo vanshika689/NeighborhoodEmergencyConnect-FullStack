@@ -1,5 +1,4 @@
 package com.example.neighborhoodemergencyconnect.activities
-
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -25,22 +24,22 @@ class AddAlert : AppCompatActivity() {
     var selectedImageUri: Uri? = null
     var uploadedImageUrl : String? = null
     private lateinit var binding: ActivityAddAlertBinding
-
     private val locationPickerLauncher =
         registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
 
             if (result.resultCode == RESULT_OK) {
+
                 val data = result.data
 
-                latitude =
+                 latitude =
                     data?.getDoubleExtra("latitude", 0.0)
 
-                longitude =
+                 longitude =
                     data?.getDoubleExtra("longitude", 0.0)
 
-                val Shortaddress = data?.getStringExtra("Shortaddress")
+                 val Shortaddress = data?.getStringExtra("Shortaddress")
                 fullAddress = data?.getStringExtra("fullAddress")
 
                 binding.etLocation.setText(
@@ -48,66 +47,65 @@ class AddAlert : AppCompatActivity() {
                 )
             }
         }
-
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityAddAlertBinding.inflate(layoutInflater)
-        enableEdgeToEdge()
-        setContentView(binding.root)
 
-        val imagePickerLauncher =
-            registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->           ///opens gallery
-                if (uri != null) {
-                    selectedImageUri = uri
-                    lifecycleScope.launch {
+     val imagePickerLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) {
+                uri ->           ///opens gallery
+            if(uri != null){
+                selectedImageUri = uri
+                lifecycleScope.launch {
 
-                        try {
-                            val inputStream = contentResolver.openInputStream(uri)
-                            val bytes = inputStream?.readBytes()
+                    try {
+                        val inputStream = contentResolver.openInputStream(uri)
+                        val bytes = inputStream?.readBytes()
 
-                            if (bytes != null) {
-                                val requestBody = bytes.toRequestBody(
-                                    "image/*".toMediaTypeOrNull()
-                                )
+                        if (bytes != null) {
+                            val requestBody = bytes.toRequestBody(
+                                "image/*".toMediaTypeOrNull()
+                            )
 
-                                val imagePart = MultipartBody.Part.createFormData(
-                                    "image",
-                                    "upload.jpg",
-                                    requestBody
-                                )
+                            val imagePart = MultipartBody.Part.createFormData(
+                                "image",
+                                "upload.jpg",
+                                requestBody
+                            )
 
-                                val response =
-                                    RetrofitInstance.api.uploadImage(imagePart)
+                            val response =
+                                RetrofitInstance.api.uploadImage(imagePart)
 
-                                if (response.isSuccessful) {
-                                    uploadedImageUrl = response.body()?.imageUrl
-                                    binding.ImageText.setText("Image Selected Successfully")
+                            if (response.isSuccessful) {
+                                uploadedImageUrl = response.body()?.imageUrl
+                                binding.ImageText.setText("Image Selected Successfully")
 
-                                } else {
-                                    Toast.makeText(
-                                        this@AddAlert, "Upload failed", Toast.LENGTH_SHORT
-                                    ).show()
-                                }
+
+                            } else {
+
+                                Toast.makeText(this@AddAlert, "Upload failed", Toast.LENGTH_SHORT
+                                ).show()
                             }
-
-                        } catch (e: Exception) {
-                            Toast.makeText(
-                                this@AddAlert, e.message, Toast.LENGTH_SHORT
-                            ).show()
                         }
+
+                    } catch (e: Exception) {
+                        Toast.makeText(this@AddAlert, e.message, Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
-            }
 
+
+            }
+        }
+        binding = ActivityAddAlertBinding.inflate(layoutInflater)
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContentView(binding.root)
         binding.etLocation.setOnClickListener {
             val intent = Intent(this, SelectLocationActivity::class.java)
             locationPickerLauncher.launch(intent)
-        }
 
+        }
         binding.btnUploadImage.setOnClickListener {
             imagePickerLauncher.launch("image/*")
         }
-
         binding.layoutFire.setOnClickListener {
             selectCategory(binding.layoutFire, "Fire")
             binding.etTitle.setText("Fire")
@@ -132,18 +130,16 @@ class AddAlert : AppCompatActivity() {
             selectCategory(binding.layoutOther, "Other")
             binding.etTitle.setText("Other")
         }
-
         binding.Cancel.setOnClickListener {
             finish()
         }
-
-        binding.btnSubmitAlert.setOnClickListener {
+        binding .btnSubmitAlert.setOnClickListener {
             val title = binding.etTitle.text.toString().trim()
             val description = binding.etDescription.text.toString().trim()
             val location = binding.etLocation.text.toString().trim()
 
             if (title.isEmpty()) {
-                Toast.makeText(this, "Please select Category", Toast.LENGTH_SHORT).show()
+               Toast.makeText(this, "Please select Category", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             if (description.isEmpty()) {
@@ -168,6 +164,7 @@ class AddAlert : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+
             val request = AddAlertReq(
                 title = title,
                 description = description,
@@ -180,66 +177,38 @@ class AddAlert : AppCompatActivity() {
 
             val sharedPreferences = getSharedPreferences("NEC_APP", MODE_PRIVATE)
             val token = sharedPreferences.getString("token", null)
-            if (token.isNullOrEmpty()) {
-                Toast.makeText(this, "Token not found. Please log in again.", Toast.LENGTH_SHORT).show()
+            if (token == null) {
+                Toast.makeText(this, "Token not found", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            setDispatchLoading(true)
-
             lifecycleScope.launch {
                 try {
-                    // ✅ FIXED: Added "Bearer " prefix here so authMiddleware accepts it!
-                    val response = RetrofitInstance.api.addAlert(
-                        "Bearer $token",
-                        request
-                    )
-
+                    val response = RetrofitInstance.api.addAlert("$token",request)
                     if (response.isSuccessful) {
                         val alertResponse = response.body()
-
                         Toast.makeText(
                             this@AddAlert,
                             alertResponse?.message ?: "Alert Created Successfully",
                             Toast.LENGTH_SHORT
                         ).show()
-
                         binding.etTitle.text?.clear()
                         binding.etDescription.text?.clear()
                         binding.etLocation.text?.clear()
-
                         finish()
-
                     } else {
-                        setDispatchLoading(false)
-                        Toast.makeText(
-                            this@AddAlert,
-                            "Failed to create alert. Please try again.",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
+                        Toast.makeText(this@AddAlert, "Failed to create alert", Toast.LENGTH_SHORT).show()
 
-                } catch (e: Exception) {
-                    setDispatchLoading(false)
-                    Toast.makeText(
-                        this@AddAlert,
-                        "Unable to dispatch alert. Please try again.",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    }
+                } catch(e: Exception) {
+                    Toast.makeText(this@AddAlert, e.message, Toast.LENGTH_SHORT).show()
                 }
             }
+
         }
+
     }
 
-    private fun setDispatchLoading(isLoading: Boolean) {
-        binding.btnSubmitAlert.isEnabled = !isLoading
-
-        if (isLoading) {
-            binding.btnSubmitAlert.text = "⏳ Analyzing & Dispatching..."
-        } else {
-            binding.btnSubmitAlert.text = "🚨 Dispatch Alert"
-        }
-    }
 
     fun resetSelection() {
         binding.layoutFire.setBackgroundResource(R.drawable.category_normal)
@@ -248,15 +217,16 @@ class AddAlert : AppCompatActivity() {
         binding.layoutCrime.setBackgroundResource(R.drawable.category_normal)
         binding.layoutOther.setBackgroundResource(R.drawable.category_normal)
     }
-
     private fun selectCategory(
         view: LinearLayout,
         category: String
     ) {
+
         resetSelection()
         view.setBackgroundResource(
             R.drawable.titleselected
         )
+
         binding.etTitle.setText(category)
     }
 }

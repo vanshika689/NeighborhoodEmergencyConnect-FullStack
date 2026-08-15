@@ -62,7 +62,7 @@ class ProfileFragment : Fragment() {
                 .setTitle("Logout")
                 .setMessage("Are you sure you want to logout?")
                 .setPositiveButton("Logout") { _, _ ->
-                    val sharedPreferences = requireContext().getSharedPreferences("NEC_APP", Context.MODE_PRIVATE)
+                   val sharedPreferences = requireContext().getSharedPreferences("NEC_APP", Context.MODE_PRIVATE)
                     sharedPreferences.edit().remove("token").apply()
                     Toast.makeText(
                         context,
@@ -116,7 +116,7 @@ class ProfileFragment : Fragment() {
 
     }
 
-    fun fetchProfile() {
+     fun fetchProfile() {
         viewLifecycleOwner.lifecycleScope.launch {
             try {
                 if (_binding == null || !isAdded) return@launch
@@ -124,19 +124,11 @@ class ProfileFragment : Fragment() {
                     requireContext().getSharedPreferences("NEC_APP", Context.MODE_PRIVATE)
 
                 val token = sharedPreferences.getString("token", null)
-                val response = RetrofitInstance.api.getProfile("Bearer $token")
+                val response = RetrofitInstance.api.getProfile("$token")
 
                 if (response.isSuccessful) {
                     val user = response.body()?.user
-
-                    if (user != null) {
-                        sharedPreferences.edit()
-                            .putString("role", user.role)
-                            .putString("userName", user.name)
-                            .putString("userEmail", user.email)
-                            .apply()
-                    }
-
+                    sharedPreferences.edit().putString("role",user?.role).apply()
                     if (_binding == null || !isAdded) return@launch
                     if (user != null) {
                         updateUI(user)
@@ -153,7 +145,9 @@ class ProfileFragment : Fragment() {
                 ).show()
                 e.printStackTrace()
             }
+
         }
+
     }
 
     override fun onDestroyView() {
@@ -216,42 +210,43 @@ class ProfileFragment : Fragment() {
 
 
 
-    private fun sendVolunteerRequest() {
-        lifecycleScope.launch {
-            if (_binding == null || !isAdded) return@launch
-            try {
-                val sharedPreferences =
-                    requireContext().getSharedPreferences("NEC_APP", Context.MODE_PRIVATE)
-                val token = sharedPreferences.getString("token", null)
-                val response = RetrofitInstance.api.sendVolReq("$token")
-                if (response.isSuccessful) {
-                    Toast.makeText(
-                        requireContext(),
-                        "Request Sent Successfully",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    fetchProfile()
-
-                } else {
-                    Toast.makeText(
-                        requireContext(),
-                        response.errorBody()?.string() ?: "Failed to send request",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            } catch (e: CancellationException) {
-                throw e
-            } catch(e:Exception){
-                if (!isAdded || _binding == null) return@launch
+private fun sendVolunteerRequest() {
+    lifecycleScope.launch {
+        if (_binding == null || !isAdded) return@launch
+        try {
+            val sharedPreferences =
+                requireContext().getSharedPreferences("NEC_APP", Context.MODE_PRIVATE)
+            val token = sharedPreferences.getString("token", null)
+            val response = RetrofitInstance.api.sendVolReq("$token")
+            if (response.isSuccessful) {
                 Toast.makeText(
                     requireContext(),
-                    "unable to load Profile",
+                    "Request Sent Successfully",
+                    Toast.LENGTH_SHORT
+                ).show()
+                fetchProfile()
+
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    response.errorBody()?.string() ?: "Failed to send request",
                     Toast.LENGTH_SHORT
                 ).show()
             }
+        } catch (e: CancellationException) {
+            throw e
+        } catch(e:Exception){
+            if (!isAdded || _binding == null) return@launch
+            Toast.makeText(
+                requireContext(),
+                "unable to load Profile",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
+}
 
 }
+
 
 

@@ -80,8 +80,7 @@ class VolunteerReq : AppCompatActivity() {
                     return@launch
                 }
 
-                // ✅ CORRECT: Added "Bearer " prefix here!
-                val response = RetrofitInstance.api.getVolReq("Bearer $token")
+                val response = RetrofitInstance.api.getVolReq(token)
 
                 binding.progressBar.visibility = View.GONE
 
@@ -140,7 +139,7 @@ class VolunteerReq : AppCompatActivity() {
                     MODE_PRIVATE
                 ).getString("token", null)
                 if (token != null) {
-                    val response = RetrofitInstance.api.rejectVolReq("Bearer $token", user._id)
+                    val response = RetrofitInstance.api.rejectVolReq("$token", user._id)
                     if (response.isSuccessful) {
                         Toast.makeText(
                             this@VolunteerReq,
@@ -178,7 +177,7 @@ class VolunteerReq : AppCompatActivity() {
                 ).getString("token", null)
                 if (token != null) {
 
-                    val response = RetrofitInstance.api.approveVolReq("Bearer $token", user._id)
+                    val response = RetrofitInstance.api.approveVolReq("$token", user._id)
                     if (response.isSuccessful) {
                         Toast.makeText(
                             this@VolunteerReq,

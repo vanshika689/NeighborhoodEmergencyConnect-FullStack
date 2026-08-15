@@ -1,6 +1,5 @@
 package com.example.neighborhoodemergencyconnect.activities
 
-import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -17,20 +16,19 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.example.neighborhoodemergencyconnect.databinding.ActivityMainBinding
 import com.example.neighborhoodemergencyconnect.fragments.AlertsFragment
 import com.example.neighborhoodemergencyconnect.fragments.ProfileFragment
-import com.example.neighborhoodemergencyconnect.fragments.MapFragment
 import kotlinx.coroutines.launch
+import android.Manifest
+import com.example.neighborhoodemergencyconnect.fragments.MapFragment
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
-
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
+        super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(binding.root)
-
+        //Default Fragment
         replaceFragment(MapFragment())
-
         if (
             ContextCompat.checkSelfPermission(
                 this,
@@ -42,12 +40,15 @@ class MainActivity : AppCompatActivity() {
                 arrayOf(Manifest.permission.POST_NOTIFICATIONS),
                 1001
             )
+
         }
 
         updateFcmToken()
 
         binding.bottomNavigation.setOnItemSelectedListener {
+
             when (it.itemId) {
+
                 R.id.nav_home -> {
                     replaceFragment(MapFragment())
                     true
@@ -71,19 +72,24 @@ class MainActivity : AppCompatActivity() {
     private fun replaceFragment(fragment: androidx.fragment.app.Fragment) {
         supportFragmentManager.beginTransaction().replace(R.id.fragment, fragment).commit()
     }
-
     private fun updateFcmToken() {
-        val sharedPreferences = getSharedPreferences("NEC_APP", Context.MODE_PRIVATE)
-        val token = sharedPreferences.getString("token", null)
 
-        if (token.isNullOrEmpty()) return
+        val token = getSharedPreferences(
+            "NEC_APP",
+            Context.MODE_PRIVATE
+        ).getString("token", null)
+
+        if (token == null) return
 
         FirebaseMessaging.getInstance().token
             .addOnSuccessListener { fcmToken ->
+
                 lifecycleScope.launch {
+
                     try {
+
                         RetrofitInstance.api.saveFcmToken(
-                            "Bearer $token",
+                            token,
                             FcmTokenRequest(fcmToken)
                         )
 
@@ -91,7 +97,9 @@ class MainActivity : AppCompatActivity() {
                             "FCM_SAVE",
                             "Token saved successfully"
                         )
+
                     } catch (e: Exception) {
+
                         Log.e(
                             "FCM_SAVE",
                             e.message ?: "Unknown error"

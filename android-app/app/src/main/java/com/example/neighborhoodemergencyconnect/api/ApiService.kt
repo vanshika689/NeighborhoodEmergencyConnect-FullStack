@@ -6,6 +6,9 @@ import retrofit2.Response
 import retrofit2.http.*
 
 interface ApiService {
+
+    // --- AUTH ROUTES ---
+
     @POST("api/auth/register")
     suspend fun registerUser(
         @Body request: RegisterRequest
@@ -15,12 +18,6 @@ interface ApiService {
     suspend fun loginUser(
         @Body request: LoginRequest
     ): Response<LoginResponse>
-
-
-    @POST("api/auth/resend-otp")
-    suspend fun resendOtp(
-        @Body body: Map<String, String>
-    ): Response<MessageResponse>
 
     @GET("api/auth/profile")
     suspend fun getProfile(
@@ -45,6 +42,7 @@ interface ApiService {
         @Body request: FcmTokenRequest
     ): Response<MessageResponse>
 
+    // --- VOLUNTEER ROUTES ---
 
     @PATCH("api/auth/request-volunteer")
     suspend fun sendVolReq(
@@ -68,6 +66,7 @@ interface ApiService {
         @Path("id") id: String
     ): Response<VolReq>
 
+    // --- ALERT ROUTES ---
 
     @GET("api/alerts/")
     suspend fun getAlerts(): Response<AlertResponse>
@@ -83,6 +82,7 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Response<AlertResponse>
 
+    // 🌟 ADDED: Get alerts current user has responded to
     @GET("api/alerts/my-responses")
     suspend fun getMyResponses(
         @Header("Authorization") token: String
@@ -106,6 +106,7 @@ interface ApiService {
         @Body request: ResolveRequest
     ): Response<AlertDetailsResponse>
 
+    // --- DASHBOARD & UPLOAD ---
 
     @GET("api/dashboard/")
     suspend fun getDashboard(

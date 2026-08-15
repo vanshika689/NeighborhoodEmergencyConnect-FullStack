@@ -2,7 +2,6 @@ package com.example.neighborhoodemergencyconnect.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -54,28 +53,26 @@ class RegisterActivity : AppCompatActivity() {
             }
 
             val request = RegisterRequest(name = name, email = email, password = password)
-            Log.d("REGISTER", "Sending request...")
 
             lifecycleScope.launch {
                 try {
                     val response = RetrofitInstance.api.registerUser(request)
-                    val errorText = response.errorBody()?.string()
-                    Log.d("REGISTER", "Code = ${response.code()}")
-                    Log.d("REGISTER", "Body = ${response.body()}")
-                    Log.d("REGISTER", "Error = $errorText")
                     if (response.isSuccessful && response.body() != null) {
-                        Toast.makeText(
-                            this@RegisterActivity,
-                            "Registration successful. Please login.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-
-                        val intent = Intent(this@RegisterActivity, LoginActivity::class.java)
-                        startActivity(intent)
+                        val body = response.body()!!
+                        val sharedPreferences = getSharedPreferences("NEC_APP", MODE_PRIVATE)
+                        sharedPreferences.edit().apply {
+                            putString("token", body.token)
+                            putString("role", body.role)
+                            putString("userId", body.userId)
+                            apply()
+                        }
+                        Toast.makeText(this@RegisterActivity, "Registration Successful!", Toast.LENGTH_SHORT).show()
+                        // Navigate to Main Activity or Login Activity
+                        startActivity(Intent(this@RegisterActivity, MainActivity::class.java))
                         finish()
                     } else {
                         val errorMessage = try {
-                            JSONObject(errorText ?: "").getString("message")
+                            JSONObject(response.errorBody()?.string() ?: "").getString("message")
                         } catch (e: Exception) {
                             "Registration failed"
                         }

@@ -34,10 +34,6 @@ class citizenDashboard : AppCompatActivity(){
             startActivity(intent)
 
         }
-        binding.card.setOnClickListener {
-            val intent = Intent(this@citizenDashboard, FeedbackActivity::class.java)
-            startActivity(intent)
-        }
 
 
     }
@@ -46,7 +42,7 @@ class citizenDashboard : AppCompatActivity(){
         lifecycleScope.launch {
             try {
                 val token = getSharedPreferences("NEC_APP", MODE_PRIVATE).getString("token", null)
-                val response = RetrofitInstance.api.getDashboard("Bearer $token")
+                val response = RetrofitInstance.api.getDashboard("$token")
                 if (response.isSuccessful) {
                     val dashboardData = response.body()
                     binding.tvTotalAlerts.text = dashboardData?. totalalertsbyme.toString()

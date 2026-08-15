@@ -27,9 +27,11 @@ class MyAlert : AppCompatActivity() {
         binding = ActivityMyAlertBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
         binding.topAppBar.setNavigationOnClickListener {
             finish()
         }
+
 
         binding.btnCreateAlert.setOnClickListener {
             startActivity(Intent(this, AddAlert::class.java))
@@ -62,7 +64,7 @@ class MyAlert : AppCompatActivity() {
                     MODE_PRIVATE
                 ).getString("token", null)
 
-                if (token.isNullOrEmpty()) {
+                if (token == null) {
 
                     binding.progressBar.visibility = View.GONE
 
@@ -75,7 +77,7 @@ class MyAlert : AppCompatActivity() {
                     return@launch
                 }
 
-                val response = RetrofitInstance.api.getMyAlerts("Bearer $token")
+                val response = RetrofitInstance.api.getMyAlerts(token)
 
                 binding.progressBar.visibility = View.GONE
 

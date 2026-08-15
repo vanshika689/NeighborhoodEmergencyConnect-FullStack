@@ -24,11 +24,11 @@ class EditProfileActivity : AppCompatActivity() {
     private var selectedImageUri: Uri? = null
     private var isUploadingImage = false
 
-    private lateinit var binding : ActivityEditProfileBinding
 
+    private lateinit var binding : ActivityEditProfileBinding
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         binding = ActivityEditProfileBinding.inflate(layoutInflater)
+        super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(binding.root)
         loadProfile()
@@ -38,8 +38,8 @@ class EditProfileActivity : AppCompatActivity() {
         binding.fabEditPhoto.setOnClickListener {
             imagePickerLauncher.launch("image/*")
         }
-    }
 
+        }
     private fun updateProfile() {
         val name = binding.etFullName.text.toString().trim()
         val email = binding.etEmail.text.toString().trim()
@@ -62,32 +62,32 @@ class EditProfileActivity : AppCompatActivity() {
         }
         lifecycleScope.launch {
             try {
+
+
                 val sharedPreferences = getSharedPreferences("NEC_APP", MODE_PRIVATE)
                 val token = sharedPreferences.getString("token", null)
 
-                if (token.isNullOrEmpty()) {
-                    Toast.makeText(this@EditProfileActivity, "Session expired. Please log in again.", Toast.LENGTH_SHORT).show()
-                    return@launch
-                }
-
                 binding.btnSaveChanges.isEnabled = false
                 Log.d("SENDING_URL", "SENDING URL = $uploadedImageUrl")
-
                 val response =
                     RetrofitInstance.api.updateProfile(
-                        "Bearer $token",
+                        token!!,
                         UpdateProfileRequest(name, email, uploadedImageUrl)
                     )
 
                 if (response.isSuccessful) {
                     Toast.makeText(
                         this@EditProfileActivity,
-                        response.body()?.message ?: "Profile Updated",
+                        response.body()?.message
+                            ?: "Profile Updated",
                         Toast.LENGTH_SHORT
                     ).show()
                     loadProfile()
+
                     finish()
+
                 } else {
+
                     Toast.makeText(
                         this@EditProfileActivity,
                         "Error ${response.code()}",
@@ -96,11 +96,13 @@ class EditProfileActivity : AppCompatActivity() {
                 }
 
             } catch (e: Exception) {
+
                 Toast.makeText(
                     this@EditProfileActivity,
                     e.message,
                     Toast.LENGTH_SHORT
                 ).show()
+
             }
             binding.btnSaveChanges.isEnabled = true
         }
@@ -108,15 +110,16 @@ class EditProfileActivity : AppCompatActivity() {
 
     private fun loadProfile() {
         lifecycleScope.launch {
+
             try {
                 val prefs = getSharedPreferences("NEC_APP", MODE_PRIVATE)
                 val token = prefs.getString("token", null)
 
-                if (token.isNullOrEmpty()) return@launch
-
-                val response = RetrofitInstance.api.getProfile("Bearer $token")
+                val response = RetrofitInstance.api.getProfile(token!!)
                 if (response.isSuccessful) {
+
                     response.body()?.let {
+
                         binding.etFullName.setText(it.user.name)
                         binding.etEmail.setText(it.user.email)
 
@@ -124,7 +127,9 @@ class EditProfileActivity : AppCompatActivity() {
                             uploadedImageUrl = it.user.profileImage
                         }
                         Log.d("DB_URL", "DB URL = ${it.user.profileImage}")
+
                     }
+
                 } else {
                     Toast.makeText(
                         this@EditProfileActivity,
@@ -139,24 +144,32 @@ class EditProfileActivity : AppCompatActivity() {
                     e.message,
                     Toast.LENGTH_SHORT
                 ).show()
+
             }
         }
-    }
 
+    }
     private val imagePickerLauncher =
         registerForActivityResult(
             ActivityResultContracts.GetContent()
         ) { uri ->
+
             if (uri != null) {
+
                 selectedImageUri = uri
+
                 binding.ivProfileImage.setImageURI(uri)
 
                 lifecycleScope.launch {
+
                     try {
-                        val inputStream = contentResolver.openInputStream(uri)
+                        val inputStream =
+                            contentResolver.openInputStream(uri)
+
                         val bytes = inputStream?.readBytes()
 
                         if (bytes != null) {
+
                             val requestBody =
                                 bytes.toRequestBody(
                                     "image/*".toMediaTypeOrNull()
@@ -171,36 +184,46 @@ class EditProfileActivity : AppCompatActivity() {
                             isUploadingImage = true
                             binding.btnSaveChanges.text = "Please wait while uploading..."
 
+
                             val response =
                                 RetrofitInstance.api.uploadImage(
                                     imagePart
                                 )
 
                             if (response.isSuccessful) {
-                                uploadedImageUrl = response.body()?.imageUrl
+                                uploadedImageUrl =
+                                    response.body()?.imageUrl
                                 isUploadingImage = false
                                 binding.btnSaveChanges.text = "Save Changes"
                             } else {
-                                isUploadingImage = false
-                                binding.btnSaveChanges.text = "Save Changes"
                                 Toast.makeText(
                                     this@EditProfileActivity,
                                     "Upload Failed",
                                     Toast.LENGTH_SHORT
                                 ).show()
+
                             }
+
                         }
+
                     } catch (e: Exception) {
-                        isUploadingImage = false
-                        binding.btnSaveChanges.text = "Save Changes"
-                        Log.e("UPLOAD_ERROR", "Upload Failed", e)
+
+                        Log.e(
+                            "UPLOAD_ERROR",
+                            "Upload Failed",
+                            e
+                        )
+
                         Toast.makeText(
                             this@EditProfileActivity,
                             e.toString(),
                             Toast.LENGTH_LONG
                         ).show()
                     }
+
                 }
+
             }
+
         }
 }

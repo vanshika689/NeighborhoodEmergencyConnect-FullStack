@@ -29,7 +29,7 @@ class VolunteerDashboard : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 val token = getSharedPreferences("NEC_APP", MODE_PRIVATE).getString("token", null)
-                val response = RetrofitInstance.api.getDashboard("Bearer $token")
+                val response = RetrofitInstance.api.getDashboard("$token")
                 if (response.isSuccessful) {
                     val dashboardData = response.body()
                     binding.totalAlerts.text = dashboardData?. totalalerts.toString()
