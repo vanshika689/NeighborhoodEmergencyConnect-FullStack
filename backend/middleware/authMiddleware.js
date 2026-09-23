@@ -9,15 +9,22 @@ const authMiddleware = (req, res, next) => {
                 message: "No token provided"
             });
         }
-        const parts = authHeader.split(" ");
 
-        if (parts.length !== 2 || parts[0] !== "Bearer") {
-            return res.status(401).json({
-                message: "Invalid authorization format"
-            });
+        let token;
+
+        // ✅ Check if it starts with "Bearer " or was passed as a raw token
+        if (authHeader.startsWith("Bearer ")) {
+            const parts = authHeader.trim().split(/\s+/);
+            if (parts.length !== 2) {
+                return res.status(401).json({
+                    message: "Invalid authorization format"
+                });
+            }
+            token = parts[1];
+        } else {
+            // ✅ Handles direct raw token without throwing format error
+            token = authHeader.trim();
         }
-
-        const token = parts[1];
 
         const decoded = jwt.verify(
             token,
@@ -25,13 +32,10 @@ const authMiddleware = (req, res, next) => {
         );
 
         req.user = decoded;
-
         next();
 
     } catch (error) {
-
         console.error("JWT Error:", error.message);
-
         return res.status(401).json({
             message: "Invalid token"
         });
