@@ -41,11 +41,11 @@ const userSchema = new mongoose.Schema({
         type: Date,
         default: null
     },
-    isEmailVerified: {
+    isVerified: {
         type: Boolean,
         default: false
     }
     
-});
+}, {timestamps: true});
 
 module.exports = mongoose.model("User", userSchema);

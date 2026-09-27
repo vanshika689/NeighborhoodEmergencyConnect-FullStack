@@ -2,6 +2,7 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const sendOtpEmail = require("../utils/sendEmail");
 const authMiddleware = require("../middleware/authMiddleware");
 const Alert = require("../models/Alert");
 const sendNotification = require("../utils/sendNotification");
@@ -20,29 +21,103 @@ router.post("/register", async (req, res) => {
 
         let existingUser = await User.findOne({ email });
 
-        if (existingUser) {
+        if (existingUser && existingUser.isVerified) {
             return res.status(400).json({
                 message: "User already exists with this email"
             });
         }
 
+        // 2. Generate a 6-digit OTP & set 10-minute expiry
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const user = new User({
-            name,
-            email,
-            password: hashedPassword,
-        });
+       if (!existingUser) {
+            // New user registration
+            existingUser = new User({
+                name,
+                email,
+                password: hashedPassword,
+                otp,
+                otpExpiresAt,
+                isVerified: false
+            });
+        } else {
+            // Unverified user retrying signup: update their details & new OTP
+            existingUser.name = name;
+            existingUser.password = hashedPassword;
+            existingUser.otp = otp;
+            existingUser.otpExpiresAt = otpExpiresAt;
+        }
 
-        await user.save();
+        await existingUser.save();
 
-        res.status(201).json({
-            message: "Register Successfully",
-            email,
+        await sendOtpEmail(email, otp);
+
+       res.status(200).json({
+            message: "OTP sent to your email. Please verify to complete registration.",
+            email
         });
 
     } catch (error) {
         console.error("REGISTER ERROR:", error);
+        res.status(500).json({
+            message: "Server Error: Could not send verification code"
+        });
+    }
+});
+
+router.post("/verify-otp", async (req, res) => {
+    try {
+        const { email, otp } = req.body;
+
+        if (!email || !otp) {
+            return res.status(400).json({
+                message: "Email and OTP are required"
+            });
+        }
+
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+
+        if (user.isVerified) {
+            return res.status(400).json({
+                message: "Account is already verified"
+            });
+        }
+
+        // Check if OTP matches
+        if (user.otp !== otp) {
+            return res.status(400).json({
+                message: "Invalid OTP. Please check your email"
+            });
+        }
+
+        // Check if OTP has expired
+        if (new Date() > user.otpExpiresAt) {
+            return res.status(400).json({
+                message: "OTP has expired. Please register again to get a new code"
+            });
+        }
+
+        // Mark verified and clear temporary OTP fields
+        user.isVerified = true;
+        user.otp = undefined;
+        user.otpExpiresAt = undefined;
+        await user.save();
+
+        res.status(200).json({
+            message: "Email verified successfully! You can now log in."
+        });
+
+    } catch (error) {
+        console.error("VERIFY OTP ERROR:", error);
         res.status(500).json({
             message: "Server Error"
         });
@@ -69,9 +144,16 @@ router.post("/login", async (req, res) => {
 
         const isMatch = await bcrypt.compare(password, user.password);
 
+
         if (!isMatch) {
             return res.status(400).json({
                 message: "Invalid Credentials"
+            });
+        }
+
+        if (!user.isVerified) {
+            return res.status(403).json({
+                message: "Your email is not verified. Please verify your account first."
             });
         }
 
@@ -99,6 +181,55 @@ router.post("/login", async (req, res) => {
         res.status(500).json({
             message: "Server Error"
         });
+    }
+});
+
+router.post("/resend-otp", async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ message: "Email is required" });
+        }
+
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        if (user.isVerified) {
+            return res.status(400).json({ message: "Account is already verified" });
+        }
+
+        // ⏱️ Rate Limiting: Prevent spamming within 60 seconds
+        // (Only allow resend if more than 1 min has passed since otpExpiresAt was set)
+        if (user.otpExpiresAt) {
+            const timeSinceGenerated = (10 * 60 * 1000) - (user.otpExpiresAt - Date.now());
+            if (timeSinceGenerated < 60 * 1000) {
+                const waitSeconds = Math.ceil((60 * 1000 - timeSinceGenerated) / 1000);
+                return res.status(429).json({
+                    message: `Please wait ${waitSeconds} seconds before requesting a new OTP.`
+                });
+            }
+        }
+
+        // Generate fresh OTP & set 10-minute expiry
+        const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
+        user.otp = newOtp;
+        user.otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
+        await user.save();
+
+        // Dispatch email
+        await sendOtpEmail(email, newOtp);
+
+        res.status(200).json({
+            message: "New OTP has been sent to your email."
+        });
+
+    } catch (error) {
+        console.error("RESEND OTP ERROR:", error);
+        res.status(500).json({ message: "Server error: Unable to resend OTP" });
     }
 });
 
