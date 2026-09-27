@@ -52,13 +52,14 @@ router.post("/register", async (req, res) => {
         }
 
         await existingUser.save();
+sendOtpEmail(email, otp).catch(err => {
+    console.error("BACKGROUND EMAIL DISPATCH FAILED:", err.message);
+});
 
-        await sendOtpEmail(email, otp);
-
-       res.status(200).json({
-            message: "OTP sent to your email. Please verify to complete registration.",
-            email
-        });
+return res.status(200).json({
+    message: "OTP sent to your email. Please verify to complete registration.",
+    email
+});
 
     } catch (error) {
         console.error("REGISTER ERROR:", error);
